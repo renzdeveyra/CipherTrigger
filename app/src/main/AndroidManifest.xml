@@ -38,13 +38,25 @@
             android:name=".MainActivity"
             android:exported="true"
             android:label="@string/app_name"
+            android:launchMode="singleTop"
             android:theme="@style/Theme.CipherTrigger">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
+            <intent-filter>
+                <action android:name="com.cite012a_cs32s1.ciphertrigger.action.TRIGGER_ALERT" />
+                <category android:name="android.intent.category.DEFAULT" />
+            </intent-filter>
         </activity>
+
+        <!-- Voice Recognition Service -->
+        <service
+            android:name=".services.VoiceRecognitionService"
+            android:enabled="true"
+            android:exported="false"
+            android:foregroundServiceType="microphone" />
     </application>
 
 </manifest>

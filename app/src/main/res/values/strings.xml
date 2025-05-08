@@ -48,4 +48,10 @@
     <string name="microphone_permission_rationale">Microphone permission is needed for voice trigger functionality.</string>
     <string name="sms_permission_rationale">SMS permission is needed to send emergency messages.</string>
     <string name="phone_permission_rationale">Phone permission is needed to make emergency calls.</string>
+
+    <!-- Voice Recognition Service -->
+    <string name="voice_recognition_channel_name">Voice Recognition</string>
+    <string name="voice_recognition_channel_description">Listening for voice trigger phrases</string>
+    <string name="voice_recognition_notification_title">Voice Trigger Active</string>
+    <string name="voice_recognition_notification_text">Listening for your emergency trigger phrase</string>
 </resources>

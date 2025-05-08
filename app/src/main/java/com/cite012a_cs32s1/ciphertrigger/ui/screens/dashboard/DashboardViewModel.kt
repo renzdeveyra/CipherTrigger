@@ -7,6 +7,7 @@ import com.cite012a_cs32s1.ciphertrigger.data.models.EmergencyContact
 import com.cite012a_cs32s1.ciphertrigger.data.repositories.LocationRepository
 import com.cite012a_cs32s1.ciphertrigger.data.repositories.PreferencesRepository
 import com.cite012a_cs32s1.ciphertrigger.di.AppModule
+import com.cite012a_cs32s1.ciphertrigger.services.VoiceRecognitionManager
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
@@ -49,6 +50,13 @@ class DashboardViewModel(application: Application) : AndroidViewModel(applicatio
                 enabled = enabled,
                 phrase = preferencesRepository.userPreferencesFlow.value.voiceTriggerPhrase
             )
+
+            // Update voice recognition service
+            if (enabled) {
+                VoiceRecognitionManager.startVoiceRecognition(getApplication())
+            } else {
+                VoiceRecognitionManager.stopVoiceRecognition(getApplication())
+            }
         }
     }
 

@@ -26,6 +26,11 @@ class SetupViewModel(application: Application) : AndroidViewModel(application) {
     private val _setupState = MutableStateFlow(SetupState())
     val setupState: StateFlow<SetupState> = _setupState.asStateFlow()
 
+    init {
+        // Initialize by loading saved preferences
+        loadSavedPreferences()
+    }
+
     /**
      * Check required permissions
      */
