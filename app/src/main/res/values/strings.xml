@@ -1,0 +1,51 @@
+<resources>
+    <string name="app_name">CipherTrigger</string>
+
+    <!-- Dashboard Screen -->
+    <string name="dashboard_title">CipherTrigger</string>
+    <string name="status_title">Status</string>
+    <string name="voice_trigger_status">Voice Trigger</string>
+    <string name="location_services_status">Location Services</string>
+    <string name="emergency_contacts_title">Emergency Contacts</string>
+    <string name="no_contacts_message">No emergency contacts added yet</string>
+
+    <!-- SOS Button -->
+    <string name="sos_button_text">SOS</string>
+
+    <!-- Alert Screen -->
+    <string name="alert_title">SOS ALERT</string>
+    <string name="sending_alert_message">Sending alert in</string>
+    <string name="alert_sent_message">ALERT SENT</string>
+    <string name="contacts_notified_message">Your emergency contacts have been notified</string>
+    <string name="cancel_button">CANCEL</string>
+    <string name="complete_button">COMPLETE</string>
+
+    <!-- Alert Summary Screen -->
+    <string name="alert_summary_title">Alert Summary</string>
+    <string name="alert_completed_message">Alert Completed</string>
+    <string name="alert_details_title">Alert Details</string>
+    <string name="alert_id_format">Alert ID: %s</string>
+    <string name="alert_time_format">Time: %s</string>
+    <string name="alert_location_placeholder">Location: Not available in demo</string>
+    <string name="return_home_button">Return to Home</string>
+
+    <!-- Settings Screen -->
+    <string name="settings_title">Settings</string>
+    <string name="emergency_contacts_settings">Emergency Contacts</string>
+    <string name="voice_trigger_settings">Voice Trigger</string>
+    <string name="location_settings">Location Settings</string>
+    <string name="notification_settings">Notification Settings</string>
+
+    <!-- Setup Screen -->
+    <string name="welcome_message">Welcome to CipherTrigger</string>
+    <string name="app_description">Your personal SOS alert system</string>
+    <string name="continue_setup_button">Continue Setup</string>
+    <string name="skip_setup_button">Skip Setup (Debug)</string>
+
+    <!-- Permission Rationales -->
+    <string name="location_permission_rationale">Location permission is needed to share your location with emergency contacts.</string>
+    <string name="contacts_permission_rationale">Contacts permission is needed to select emergency contacts.</string>
+    <string name="microphone_permission_rationale">Microphone permission is needed for voice trigger functionality.</string>
+    <string name="sms_permission_rationale">SMS permission is needed to send emergency messages.</string>
+    <string name="phone_permission_rationale">Phone permission is needed to make emergency calls.</string>
+</resources>
