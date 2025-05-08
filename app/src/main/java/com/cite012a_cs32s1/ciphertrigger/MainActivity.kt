@@ -37,7 +37,7 @@ fun CipherTriggerApp() {
             // For production, use Screen.Setup.route as the start destination
             AppNavigation(
                 navController = navController,
-                startDestination = Screen.Dashboard.route // Change this for testing different screens
+                startDestination = Screen.Setup.route // Change this for testing different screens
             )
         }
     }

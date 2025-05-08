@@ -26,19 +26,38 @@ fun AppNavigation(
     ) {
         // Setup flow
         navigation(
-            startDestination = Screen.PermissionsSetup.route,
+            startDestination = Screen.WelcomeSetup.route,
             route = Screen.Setup.route
         ) {
-            composable(Screen.PermissionsSetup.route) {
+            composable(Screen.WelcomeSetup.route) {
                 SetupScreen(
+                    setupStep = SetupStep.WELCOME,
                     onNavigateToContacts = {
-                        navController.navigate(Screen.ContactsSetup.route)
+                        navController.navigate(Screen.PermissionsSetup.route)
+                    },
+                    onFinishSetup = {
+                        navController.navigate(Screen.Dashboard.route) {
+                            popUpTo(Screen.Setup.route) { inclusive = true }
+                        }
                     }
                 )
             }
-            
+
+            composable(Screen.PermissionsSetup.route) {
+                SetupScreen(
+                    setupStep = SetupStep.PERMISSIONS,
+                    onNavigateToVoiceTrigger = {
+                        navController.navigate(Screen.ContactsSetup.route)
+                    },
+                    onNavigateBack = {
+                        navController.popBackStack()
+                    }
+                )
+            }
+
             composable(Screen.ContactsSetup.route) {
                 SetupScreen(
+                    setupStep = SetupStep.CONTACTS,
                     onNavigateToVoiceTrigger = {
                         navController.navigate(Screen.VoiceTriggerSetup.route)
                     },
@@ -47,9 +66,10 @@ fun AppNavigation(
                     }
                 )
             }
-            
+
             composable(Screen.VoiceTriggerSetup.route) {
                 SetupScreen(
+                    setupStep = SetupStep.VOICE_TRIGGER,
                     onFinishSetup = {
                         navController.navigate(Screen.Dashboard.route) {
                             popUpTo(Screen.Setup.route) { inclusive = true }
@@ -61,7 +81,7 @@ fun AppNavigation(
                 )
             }
         }
-        
+
         // Main screens
         composable(Screen.Dashboard.route) {
             DashboardScreen(
@@ -73,7 +93,7 @@ fun AppNavigation(
                 }
             )
         }
-        
+
         composable(Screen.Alert.route) {
             AlertScreen(
                 onAlertComplete = { alertId ->
@@ -86,7 +106,7 @@ fun AppNavigation(
                 }
             )
         }
-        
+
         composable("${Screen.AlertSummary.route}/{alertId}") { backStackEntry ->
             val alertId = backStackEntry.arguments?.getString("alertId")
             AlertSummaryScreen(
@@ -98,7 +118,7 @@ fun AppNavigation(
                 }
             )
         }
-        
+
         // Settings screens
         navigation(
             startDestination = Screen.Settings.route,
@@ -123,7 +143,7 @@ fun AppNavigation(
                     }
                 )
             }
-            
+
             composable(Screen.ContactsSettings.route) {
                 SettingsScreen(
                     onNavigateBack = {
@@ -131,7 +151,7 @@ fun AppNavigation(
                     }
                 )
             }
-            
+
             composable(Screen.VoiceTriggerSettings.route) {
                 SettingsScreen(
                     onNavigateBack = {
@@ -139,7 +159,7 @@ fun AppNavigation(
                     }
                 )
             }
-            
+
             composable(Screen.LocationSettings.route) {
                 SettingsScreen(
                     onNavigateBack = {
@@ -147,7 +167,7 @@ fun AppNavigation(
                     }
                 )
             }
-            
+
             composable(Screen.NotificationSettings.route) {
                 SettingsScreen(
                     onNavigateBack = {

@@ -17,49 +17,48 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableIntStateOf
-import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
-import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.lifecycle.viewmodel.compose.viewModel
+import com.cite012a_cs32s1.ciphertrigger.R
 import com.cite012a_cs32s1.ciphertrigger.ui.theme.AlertRed
 import com.cite012a_cs32s1.ciphertrigger.ui.theme.CipherTriggerTheme
 import kotlinx.coroutines.delay
-import java.util.UUID
 
 /**
  * Alert screen shown when an SOS alert is triggered
  */
 @Composable
 fun AlertScreen(
+    viewModel: AlertViewModel = viewModel(),
     onAlertComplete: (String) -> Unit = {},
     onAlertCancel: () -> Unit = {}
 ) {
-    var countdown by remember { mutableIntStateOf(5) }
-    var alertSent by remember { mutableStateOf(false) }
-    val alertId = remember { UUID.randomUUID().toString() }
-    
+    val alertState by viewModel.alertState.collectAsState()
+
+    // Initialize the alert when the screen is first displayed
     LaunchedEffect(key1 = Unit) {
-        // Countdown timer
-        while (countdown > 0 && !alertSent) {
+        viewModel.initializeAlert()
+    }
+
+    // Countdown timer
+    LaunchedEffect(key1 = Unit) {
+        while (alertState.countdownSeconds > 0 && !alertState.alertSent) {
             delay(1000)
-            countdown--
-        }
-        
-        if (countdown == 0 && !alertSent) {
-            alertSent = true
-            // In a real app, we would send the alert here
+            viewModel.decrementCountdown()
         }
     }
-    
+
     Box(
         modifier = Modifier
             .fillMaxSize()
@@ -71,89 +70,100 @@ fun AlertScreen(
             horizontalAlignment = Alignment.CenterHorizontally,
             verticalArrangement = Arrangement.Center
         ) {
-            if (!alertSent) {
+            if (!alertState.alertSent) {
                 Text(
-                    text = "SOS ALERT",
+                    text = stringResource(R.string.alert_title),
                     color = Color.White,
                     fontSize = 32.sp,
                     fontWeight = FontWeight.Bold,
                     textAlign = TextAlign.Center
                 )
-                
+
                 Spacer(modifier = Modifier.height(16.dp))
-                
+
                 Text(
-                    text = "Sending alert in",
+                    text = stringResource(R.string.sending_alert_message),
                     color = Color.White,
                     fontSize = 18.sp,
                     textAlign = TextAlign.Center
                 )
-                
+
                 Spacer(modifier = Modifier.height(8.dp))
-                
+
                 Text(
-                    text = "$countdown",
+                    text = "${alertState.countdownSeconds}",
                     color = Color.White,
                     fontSize = 64.sp,
                     fontWeight = FontWeight.Bold,
                     textAlign = TextAlign.Center
                 )
-                
+
                 Spacer(modifier = Modifier.height(32.dp))
-                
+
                 Button(
-                    onClick = { onAlertCancel() },
+                    onClick = {
+                        viewModel.cancelAlert()
+                        onAlertCancel()
+                    },
                     colors = ButtonDefaults.buttonColors(
                         containerColor = Color.White,
                         contentColor = AlertRed
                     )
                 ) {
-                    Text("CANCEL")
+                    Text(stringResource(R.string.cancel_button))
                 }
             } else {
                 Text(
-                    text = "ALERT SENT",
+                    text = stringResource(R.string.alert_sent_message),
                     color = Color.White,
                     fontSize = 32.sp,
                     fontWeight = FontWeight.Bold,
                     textAlign = TextAlign.Center
                 )
-                
+
                 Spacer(modifier = Modifier.height(16.dp))
-                
+
                 Text(
-                    text = "Your emergency contacts have been notified",
+                    text = stringResource(R.string.contacts_notified_message),
                     color = Color.White,
                     fontSize = 18.sp,
                     textAlign = TextAlign.Center
                 )
-                
+
                 Spacer(modifier = Modifier.height(32.dp))
-                
+
                 Row(
                     modifier = Modifier.fillMaxWidth(),
                     horizontalArrangement = Arrangement.Center
                 ) {
                     Button(
-                        onClick = { onAlertCancel() },
+                        onClick = {
+                            viewModel.cancelAlert()
+                            onAlertCancel()
+                        },
                         colors = ButtonDefaults.buttonColors(
                             containerColor = Color.White,
                             contentColor = AlertRed
                         )
                     ) {
-                        Text("CANCEL")
+                        Text(stringResource(R.string.cancel_button))
                     }
-                    
+
                     Spacer(modifier = Modifier.width(16.dp))
-                    
+
                     Button(
-                        onClick = { onAlertComplete(alertId) },
+                        onClick = {
+                            val alertId = viewModel.completeAlert()
+                            if (alertId != null) {
+                                onAlertComplete(alertId)
+                            }
+                        },
                         colors = ButtonDefaults.buttonColors(
                             containerColor = Color.White,
                             contentColor = AlertRed
                         )
                     ) {
-                        Text("COMPLETE")
+                        Text(stringResource(R.string.complete_button))
                     }
                 }
             }
@@ -165,6 +175,58 @@ fun AlertScreen(
 @Composable
 fun AlertScreenPreview() {
     CipherTriggerTheme {
-        AlertScreen()
+        // For preview purposes, we're not using the actual ViewModel
+        Box(
+            modifier = Modifier
+                .fillMaxSize()
+                .background(AlertRed)
+                .padding(16.dp),
+            contentAlignment = Alignment.Center
+        ) {
+            Column(
+                horizontalAlignment = Alignment.CenterHorizontally,
+                verticalArrangement = Arrangement.Center
+            ) {
+                // Preview the countdown state
+                Text(
+                    text = "SOS ALERT",
+                    color = Color.White,
+                    fontSize = 32.sp,
+                    fontWeight = FontWeight.Bold,
+                    textAlign = TextAlign.Center
+                )
+
+                Spacer(modifier = Modifier.height(16.dp))
+
+                Text(
+                    text = "Sending alert in",
+                    color = Color.White,
+                    fontSize = 18.sp,
+                    textAlign = TextAlign.Center
+                )
+
+                Spacer(modifier = Modifier.height(8.dp))
+
+                Text(
+                    text = "3",
+                    color = Color.White,
+                    fontSize = 64.sp,
+                    fontWeight = FontWeight.Bold,
+                    textAlign = TextAlign.Center
+                )
+
+                Spacer(modifier = Modifier.height(32.dp))
+
+                Button(
+                    onClick = { },
+                    colors = ButtonDefaults.buttonColors(
+                        containerColor = Color.White,
+                        contentColor = AlertRed
+                    )
+                ) {
+                    Text("CANCEL")
+                }
+            }
+        }
     }
 }
