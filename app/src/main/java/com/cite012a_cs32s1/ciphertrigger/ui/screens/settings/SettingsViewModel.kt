@@ -10,6 +10,7 @@ import com.cite012a_cs32s1.ciphertrigger.data.repositories.PreferencesRepository
 import com.cite012a_cs32s1.ciphertrigger.di.AppModule
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
@@ -120,6 +121,102 @@ class SettingsViewModel(application: Application) : AndroidViewModel(application
 
         return contactRepository.getDeviceContacts()
     }
+
+    /**
+     * Update contact's SMS setting
+     */
+    fun updateContactSendSms(contactId: String, sendSms: Boolean) {
+        viewModelScope.launch {
+            val preferences = preferencesRepository.userPreferencesFlow.first()
+            val updatedContacts = preferences.emergencyContacts.map { contact ->
+                if (contact.id == contactId) {
+                    contact.copy(sendSms = sendSms)
+                } else {
+                    contact
+                }
+            }
+            preferencesRepository.updateEmergencyContacts(updatedContacts)
+        }
+    }
+
+    /**
+     * Update contact's call setting
+     */
+    fun updateContactMakeCall(contactId: String, makeCall: Boolean) {
+        viewModelScope.launch {
+            val preferences = preferencesRepository.userPreferencesFlow.first()
+            val updatedContacts = preferences.emergencyContacts.map { contact ->
+                if (contact.id == contactId) {
+                    contact.copy(makeCall = makeCall)
+                } else {
+                    contact
+                }
+            }
+            preferencesRepository.updateEmergencyContacts(updatedContacts)
+        }
+    }
+
+    /**
+     * Move contact priority up (lower number = higher priority)
+     */
+    fun moveContactPriorityUp(contactId: String) {
+        viewModelScope.launch {
+            val preferences = preferencesRepository.userPreferencesFlow.first()
+            val contacts = preferences.emergencyContacts.sortedBy { it.priority }.toMutableList()
+
+            val index = contacts.indexOfFirst { it.id == contactId }
+            if (index > 0) {
+                // Swap with the contact above it
+                val currentContact = contacts[index]
+                val higherContact = contacts[index - 1]
+
+                contacts[index] = currentContact.copy(priority = higherContact.priority)
+                contacts[index - 1] = higherContact.copy(priority = currentContact.priority)
+
+                preferencesRepository.updateEmergencyContacts(contacts)
+            }
+        }
+    }
+
+    /**
+     * Move contact priority down (higher number = lower priority)
+     */
+    fun moveContactPriorityDown(contactId: String) {
+        viewModelScope.launch {
+            val preferences = preferencesRepository.userPreferencesFlow.first()
+            val contacts = preferences.emergencyContacts.sortedBy { it.priority }.toMutableList()
+
+            val index = contacts.indexOfFirst { it.id == contactId }
+            if (index >= 0 && index < contacts.size - 1) {
+                // Swap with the contact below it
+                val currentContact = contacts[index]
+                val lowerContact = contacts[index + 1]
+
+                contacts[index] = currentContact.copy(priority = lowerContact.priority)
+                contacts[index + 1] = lowerContact.copy(priority = currentContact.priority)
+
+                preferencesRepository.updateEmergencyContacts(contacts)
+            }
+        }
+    }
+
+    /**
+     * Update SMS default setting
+     */
+    fun updateSendSmsDefault(enabled: Boolean) {
+        viewModelScope.launch {
+            preferencesRepository.updateSendSmsDefault(enabled)
+        }
+    }
+
+    /**
+     * Update call default setting
+     */
+    fun updateMakeCallDefault(enabled: Boolean) {
+        viewModelScope.launch {
+            preferencesRepository.updateMakeCallDefault(enabled)
+        }
+    }
 }
 
 /**
@@ -133,5 +230,7 @@ data class SettingsState(
     val alertCountdownSeconds: Int = 5,
     val emergencyContacts: List<EmergencyContact> = emptyList(),
     val hasContactsPermission: Boolean = false,
-    val hasLocationPermission: Boolean = false
+    val hasLocationPermission: Boolean = false,
+    val sendSmsDefault: Boolean = true,
+    val makeCallDefault: Boolean = false
 )

@@ -36,10 +36,14 @@ class MainActivity : ComponentActivity() {
             if (preferences.isSetupCompleted && preferences.voiceTriggerEnabled) {
                 VoiceRecognitionManager.initialize(this@MainActivity, preferencesRepository)
             }
-        }
 
-        setContent {
-            CipherTriggerApp(intent)
+            // Set content after checking preferences to determine start destination
+            setContent {
+                CipherTriggerApp(
+                    intent = intent,
+                    isSetupCompleted = preferences.isSetupCompleted
+                )
+            }
         }
     }
 
@@ -48,14 +52,23 @@ class MainActivity : ComponentActivity() {
         setIntent(intent)
 
         // Handle the intent in the Composable
-        setContent {
-            CipherTriggerApp(intent)
+        lifecycleScope.launch {
+            val preferences = preferencesRepository.userPreferencesFlow.first()
+            setContent {
+                CipherTriggerApp(
+                    intent = intent,
+                    isSetupCompleted = preferences.isSetupCompleted
+                )
+            }
         }
     }
 }
 
 @Composable
-fun CipherTriggerApp(intent: Intent? = null) {
+fun CipherTriggerApp(
+    intent: Intent? = null,
+    isSetupCompleted: Boolean = false
+) {
     CipherTriggerTheme {
         Surface(
             modifier = Modifier.fillMaxSize(),
@@ -78,11 +91,16 @@ fun CipherTriggerApp(intent: Intent? = null) {
                 }
             }
 
-            // For development, you can change the start destination to any screen
-            // For production, use Screen.Setup.route as the start destination
+            // Determine start destination based on setup completion status
+            val startDestination = if (isSetupCompleted) {
+                Screen.Dashboard.route
+            } else {
+                Screen.Setup.route
+            }
+
             AppNavigation(
                 navController = navController,
-                startDestination = Screen.Setup.route // Change this for testing different screens
+                startDestination = startDestination
             )
         }
     }

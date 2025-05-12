@@ -32,6 +32,8 @@ class PreferencesRepository(private val context: Context) {
         private val NOTIFICATIONS_ENABLED = booleanPreferencesKey("notifications_enabled")
         private val ALERT_COUNTDOWN_SECONDS = intPreferencesKey("alert_countdown_seconds")
         private val EMERGENCY_CONTACTS = stringPreferencesKey("emergency_contacts")
+        private val SEND_SMS_DEFAULT = booleanPreferencesKey("send_sms_default")
+        private val MAKE_CALL_DEFAULT = booleanPreferencesKey("make_call_default")
     }
 
     /**
@@ -44,6 +46,8 @@ class PreferencesRepository(private val context: Context) {
         val locationSharingEnabled = preferences[LOCATION_SHARING_ENABLED] ?: true
         val notificationsEnabled = preferences[NOTIFICATIONS_ENABLED] ?: true
         val alertCountdownSeconds = preferences[ALERT_COUNTDOWN_SECONDS] ?: 5
+        val sendSmsDefault = preferences[SEND_SMS_DEFAULT] ?: true
+        val makeCallDefault = preferences[MAKE_CALL_DEFAULT] ?: false
 
         val contactsJson = preferences[EMERGENCY_CONTACTS] ?: "[]"
         val emergencyContacts = try {
@@ -59,7 +63,9 @@ class PreferencesRepository(private val context: Context) {
             locationSharingEnabled = locationSharingEnabled,
             notificationsEnabled = notificationsEnabled,
             alertCountdownSeconds = alertCountdownSeconds,
-            emergencyContacts = emergencyContacts
+            emergencyContacts = emergencyContacts,
+            sendSmsDefault = sendSmsDefault,
+            makeCallDefault = makeCallDefault
         )
     }
 
@@ -146,6 +152,24 @@ class PreferencesRepository(private val context: Context) {
             Json.decodeFromString<List<EmergencyContact>>(preferences)
         } catch (e: Exception) {
             emptyList()
+        }
+    }
+
+    /**
+     * Update SMS default setting
+     */
+    suspend fun updateSendSmsDefault(enabled: Boolean) {
+        context.dataStore.edit { preferences ->
+            preferences[SEND_SMS_DEFAULT] = enabled
+        }
+    }
+
+    /**
+     * Update call default setting
+     */
+    suspend fun updateMakeCallDefault(enabled: Boolean) {
+        context.dataStore.edit { preferences ->
+            preferences[MAKE_CALL_DEFAULT] = enabled
         }
     }
 }
