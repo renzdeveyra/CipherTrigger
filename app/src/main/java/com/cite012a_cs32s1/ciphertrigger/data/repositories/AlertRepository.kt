@@ -22,13 +22,13 @@ import java.util.UUID
  * Repository for managing alerts
  */
 class AlertRepository(private val context: Context) {
-    
+
     private val _alerts = MutableStateFlow<List<Alert>>(emptyList())
     val alerts: StateFlow<List<Alert>> = _alerts.asStateFlow()
-    
+
     private val _currentAlert = MutableStateFlow<Alert?>(null)
     val currentAlert: StateFlow<Alert?> = _currentAlert.asStateFlow()
-    
+
     /**
      * Create a new alert
      */
@@ -39,16 +39,16 @@ class AlertRepository(private val context: Context) {
             location = location,
             status = AlertStatus.PENDING
         )
-        
+
         _alerts.update { currentAlerts ->
             currentAlerts + alert
         }
-        
+
         _currentAlert.value = alert
-        
+
         return alert
     }
-    
+
     /**
      * Update alert status
      */
@@ -62,18 +62,19 @@ class AlertRepository(private val context: Context) {
                 }
             }
         }
-        
+
         if (_currentAlert.value?.id == alertId) {
             _currentAlert.update { it?.copy(status = status) }
         }
     }
-    
+
     /**
      * Send alert to emergency contacts
+     * Primary method is SMS, secondary is phone call
      */
     fun sendAlert(alertId: String, contacts: List<EmergencyContact>, location: Location? = null): Boolean {
         val alert = _alerts.value.find { it.id == alertId } ?: return false
-        
+
         // Update alert with contacts notified
         _alerts.update { currentAlerts ->
             currentAlerts.map { currentAlert ->
@@ -88,7 +89,7 @@ class AlertRepository(private val context: Context) {
                 }
             }
         }
-        
+
         if (_currentAlert.value?.id == alertId) {
             _currentAlert.update {
                 it?.copy(
@@ -98,49 +99,52 @@ class AlertRepository(private val context: Context) {
                 )
             }
         }
-        
-        // Send SMS to contacts
+
+        // First, send SMS to all contacts (primary alert method)
         contacts.forEach { contact ->
             if (contact.sendSms) {
                 sendSms(contact.phoneNumber, createAlertMessage(location))
             }
-            
+        }
+
+        // Then, make calls if configured (secondary alert method)
+        contacts.forEach { contact ->
             if (contact.makeCall) {
                 makeCall(contact.phoneNumber)
             }
         }
-        
+
         return true
     }
-    
+
     /**
      * Complete an alert
      */
     fun completeAlert(alertId: String) {
         updateAlertStatus(alertId, AlertStatus.COMPLETED)
     }
-    
+
     /**
      * Cancel an alert
      */
     fun cancelAlert(alertId: String) {
         updateAlertStatus(alertId, AlertStatus.CANCELLED)
     }
-    
+
     /**
      * Get alert by ID
      */
     fun getAlert(alertId: String): Alert? {
         return _alerts.value.find { it.id == alertId }
     }
-    
+
     /**
      * Clear current alert
      */
     fun clearCurrentAlert() {
         _currentAlert.value = null
     }
-    
+
     /**
      * Send SMS to a phone number
      */
@@ -152,7 +156,7 @@ class AlertRepository(private val context: Context) {
         ) {
             return
         }
-        
+
         try {
             val smsManager = SmsManager.getDefault()
             smsManager.sendTextMessage(phoneNumber, null, message, null, null)
@@ -160,7 +164,7 @@ class AlertRepository(private val context: Context) {
             e.printStackTrace()
         }
     }
-    
+
     /**
      * Make a phone call
      */
@@ -172,7 +176,7 @@ class AlertRepository(private val context: Context) {
         ) {
             return
         }
-        
+
         try {
             val intent = Intent(Intent.ACTION_CALL)
             intent.data = Uri.parse("tel:$phoneNumber")
@@ -182,13 +186,13 @@ class AlertRepository(private val context: Context) {
             e.printStackTrace()
         }
     }
-    
+
     /**
      * Create alert message with location
      */
     private fun createAlertMessage(location: Location?): String {
         val baseMessage = "EMERGENCY ALERT: I need help!"
-        
+
         return if (location != null) {
             "$baseMessage My current location: ${location.toGoogleMapsUrl()}"
         } else {

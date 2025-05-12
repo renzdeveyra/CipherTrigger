@@ -10,5 +10,7 @@ data class UserPreferences(
     val locationSharingEnabled: Boolean = true,
     val notificationsEnabled: Boolean = true,
     val alertCountdownSeconds: Int = 5,
-    val emergencyContacts: List<EmergencyContact> = emptyList()
+    val emergencyContacts: List<EmergencyContact> = emptyList(),
+    val sendSmsDefault: Boolean = true,
+    val makeCallDefault: Boolean = false
 )

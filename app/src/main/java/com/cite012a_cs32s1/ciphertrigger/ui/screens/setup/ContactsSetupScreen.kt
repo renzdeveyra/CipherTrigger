@@ -249,8 +249,8 @@ fun ContactsSetupScreenImpl(
                                         deviceContact = selectedContact,
                                         phoneNumber = phoneNumber,
                                         priority = setupState.selectedContacts.size + 1,
-                                        sendSms = true,
-                                        makeCall = setupState.selectedContacts.isEmpty() // Make call for the first contact only
+                                        sendSms = true, // Always send SMS as primary alert method
+                                        makeCall = false // Calls are now secondary option
                                     )
 
                                     scope.launch {
@@ -359,7 +359,7 @@ fun ContactsSetupScreenPreview() {
                                 phoneNumber = if (index == 0) "+1 (555) 123-4567" else "+1 (555) 987-6543",
                                 priority = index + 1,
                                 sendSms = true,
-                                makeCall = index == 0
+                                makeCall = false
                             ),
                             onRemoveContact = { }
                         )

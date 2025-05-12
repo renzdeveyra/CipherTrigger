@@ -9,6 +9,7 @@ import androidx.navigation.navigation
 import com.cite012a_cs32s1.ciphertrigger.ui.screens.dashboard.DashboardScreen
 import com.cite012a_cs32s1.ciphertrigger.ui.screens.alert.AlertScreen
 import com.cite012a_cs32s1.ciphertrigger.ui.screens.alert.AlertSummaryScreen
+import com.cite012a_cs32s1.ciphertrigger.ui.screens.settings.ContactsSettingsScreen
 import com.cite012a_cs32s1.ciphertrigger.ui.screens.settings.SettingsScreen
 import com.cite012a_cs32s1.ciphertrigger.ui.screens.setup.SetupScreen
 import com.cite012a_cs32s1.ciphertrigger.ui.screens.setup.SetupStep
@@ -146,7 +147,7 @@ fun AppNavigation(
             }
 
             composable(Screen.ContactsSettings.route) {
-                SettingsScreen(
+                ContactsSettingsScreen(
                     onNavigateBack = {
                         navController.popBackStack()
                     }
