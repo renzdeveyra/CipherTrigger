@@ -12,8 +12,8 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Check
 import androidx.compose.material.icons.filled.LocationOn
-import androidx.compose.material.icons.filled.Mic
 import androidx.compose.material.icons.filled.Person
 import androidx.compose.material.icons.filled.Settings
 import androidx.compose.material3.Card
@@ -101,7 +101,7 @@ fun DashboardScreen(
                     Spacer(modifier = Modifier.height(8.dp))
 
                     StatusIndicator(
-                        icon = Icons.Default.Mic,
+                        icon = Icons.Default.Check,
                         title = stringResource(R.string.voice_trigger_status),
                         isActive = dashboardState.voiceTriggerEnabled,
                         onToggle = { enabled ->
@@ -248,7 +248,7 @@ fun DashboardScreenPreview() {
                     Spacer(modifier = Modifier.height(8.dp))
 
                     StatusIndicator(
-                        icon = Icons.Default.Mic,
+                        icon = Icons.Default.Check,
                         title = "Voice Trigger",
                         isActive = true
                     )

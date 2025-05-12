@@ -1,5 +1,6 @@
 package com.cite012a_cs32s1.ciphertrigger.ui.screens.alert
 
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer
@@ -147,20 +148,13 @@ fun AlertSummaryScreen(
                                 style = MaterialTheme.typography.bodyMedium,
                                 textDecoration = TextDecoration.Underline,
                                 color = MaterialTheme.colorScheme.primary,
-                                modifier = Modifier.fillMaxWidth()
+                                modifier = Modifier
+                                    .fillMaxWidth()
                                     .padding(vertical = 4.dp)
-                                    .let { mod ->
-                                        if (summaryState.locationUrl != null) {
-                                            mod.let { m ->
-                                                m.let { it1 ->
-                                                    androidx.compose.foundation.clickable(onClick = {
-                                                        summaryState.locationUrl?.let { url ->
-                                                            uriHandler.openUri(url)
-                                                        }
-                                                    })
-                                                }
-                                            }
-                                        } else mod
+                                    .clickable {
+                                        summaryState.locationUrl?.let { url ->
+                                            uriHandler.openUri(url)
+                                        }
                                     }
                             )
                         } else {

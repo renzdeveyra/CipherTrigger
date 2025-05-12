@@ -11,6 +11,7 @@ import com.cite012a_cs32s1.ciphertrigger.ui.screens.alert.AlertScreen
 import com.cite012a_cs32s1.ciphertrigger.ui.screens.alert.AlertSummaryScreen
 import com.cite012a_cs32s1.ciphertrigger.ui.screens.settings.SettingsScreen
 import com.cite012a_cs32s1.ciphertrigger.ui.screens.setup.SetupScreen
+import com.cite012a_cs32s1.ciphertrigger.ui.screens.setup.SetupStep
 
 /**
  * Main navigation component for the app

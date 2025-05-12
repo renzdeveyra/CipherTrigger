@@ -11,9 +11,9 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.ArrowBack
-import androidx.compose.material.icons.filled.ChevronRight
+import androidx.compose.material.icons.filled.ArrowForward
 import androidx.compose.material.icons.filled.LocationOn
-import androidx.compose.material.icons.filled.Mic
+import androidx.compose.material.icons.filled.Check
 import androidx.compose.material.icons.filled.Notifications
 import androidx.compose.material.icons.filled.Person
 import androidx.compose.material3.Divider
@@ -69,19 +69,19 @@ fun SettingsScreen(
                 title = "Emergency Contacts",
                 onClick = { onNavigateToContactsSettings() }
             )
-            
+
             SettingsItem(
-                icon = Icons.Default.Mic,
+                icon = Icons.Default.Check,
                 title = "Voice Trigger",
                 onClick = { onNavigateToVoiceTriggerSettings() }
             )
-            
+
             SettingsItem(
                 icon = Icons.Default.LocationOn,
                 title = "Location Settings",
                 onClick = { onNavigateToLocationSettings() }
             )
-            
+
             SettingsItem(
                 icon = Icons.Default.Notifications,
                 title = "Notification Settings",
@@ -110,21 +110,21 @@ fun SettingsItem(
                 contentDescription = null,
                 tint = MaterialTheme.colorScheme.primary
             )
-            
+
             Spacer(modifier = Modifier.width(16.dp))
-            
+
             Text(
                 text = title,
                 style = MaterialTheme.typography.bodyLarge,
                 modifier = Modifier.weight(1f)
             )
-            
+
             Icon(
-                imageVector = Icons.Default.ChevronRight,
+                imageVector = Icons.Default.ArrowForward,
                 contentDescription = null
             )
         }
-        
+
         Divider()
     }
 }

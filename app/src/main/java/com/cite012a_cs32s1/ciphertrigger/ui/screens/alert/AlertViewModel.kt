@@ -12,6 +12,7 @@ import com.cite012a_cs32s1.ciphertrigger.di.AppModule
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
+import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 
@@ -33,7 +34,7 @@ class AlertViewModel(application: Application) : AndroidViewModel(application) {
     fun initializeAlert() {
         viewModelScope.launch {
             // Get countdown seconds from preferences
-            val preferences = preferencesRepository.userPreferencesFlow.value
+            val preferences = preferencesRepository.userPreferencesFlow.first()
             _alertState.update { it.copy(countdownSeconds = preferences.alertCountdownSeconds) }
 
             // Get current location if enabled

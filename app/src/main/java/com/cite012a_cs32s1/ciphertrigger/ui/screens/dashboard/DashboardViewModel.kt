@@ -12,6 +12,7 @@ import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.combine
+import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
 
@@ -46,9 +47,10 @@ class DashboardViewModel(application: Application) : AndroidViewModel(applicatio
      */
     fun updateVoiceTriggerStatus(enabled: Boolean) {
         viewModelScope.launch {
+            val currentPrefs = preferencesRepository.userPreferencesFlow.first()
             preferencesRepository.updateVoiceTriggerSettings(
                 enabled = enabled,
-                phrase = preferencesRepository.userPreferencesFlow.value.voiceTriggerPhrase
+                phrase = currentPrefs.voiceTriggerPhrase
             )
 
             // Update voice recognition service

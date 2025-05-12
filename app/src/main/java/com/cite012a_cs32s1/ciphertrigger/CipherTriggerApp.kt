@@ -1,9 +1,11 @@
 package com.cite012a_cs32s1.ciphertrigger
 
 import android.app.Application
-import androidx.lifecycle.lifecycleScope
 import com.cite012a_cs32s1.ciphertrigger.di.AppModule
 import com.cite012a_cs32s1.ciphertrigger.services.VoiceRecognitionManager
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.SupervisorJob
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.launch
 
@@ -21,8 +23,8 @@ class CipherTriggerApp : Application() {
         // Initialize voice recognition service if enabled
         val preferencesRepository = AppModule.providePreferencesRepository(this)
 
-        // Use applicationScope to launch coroutines in the application scope
-        val applicationScope = lifecycleScope
+        // Create application scope for coroutines
+        val applicationScope = CoroutineScope(SupervisorJob() + Dispatchers.Main)
         applicationScope.launch {
             val preferences = preferencesRepository.userPreferencesFlow.first()
             if (preferences.isSetupCompleted && preferences.voiceTriggerEnabled) {

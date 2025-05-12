@@ -11,6 +11,7 @@ import androidx.datastore.preferences.preferencesDataStore
 import com.cite012a_cs32s1.ciphertrigger.data.models.EmergencyContact
 import com.cite012a_cs32s1.ciphertrigger.data.models.UserPreferences
 import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.map
 import kotlinx.serialization.encodeToString
 import kotlinx.serialization.json.Json
@@ -19,10 +20,10 @@ import kotlinx.serialization.json.Json
  * Repository for managing user preferences using DataStore
  */
 class PreferencesRepository(private val context: Context) {
-    
+
     companion object {
         private val Context.dataStore: DataStore<Preferences> by preferencesDataStore(name = "settings")
-        
+
         // Preferences keys
         private val IS_SETUP_COMPLETED = booleanPreferencesKey("is_setup_completed")
         private val VOICE_TRIGGER_ENABLED = booleanPreferencesKey("voice_trigger_enabled")
@@ -32,7 +33,7 @@ class PreferencesRepository(private val context: Context) {
         private val ALERT_COUNTDOWN_SECONDS = intPreferencesKey("alert_countdown_seconds")
         private val EMERGENCY_CONTACTS = stringPreferencesKey("emergency_contacts")
     }
-    
+
     /**
      * Get user preferences as a Flow
      */
@@ -43,14 +44,14 @@ class PreferencesRepository(private val context: Context) {
         val locationSharingEnabled = preferences[LOCATION_SHARING_ENABLED] ?: true
         val notificationsEnabled = preferences[NOTIFICATIONS_ENABLED] ?: true
         val alertCountdownSeconds = preferences[ALERT_COUNTDOWN_SECONDS] ?: 5
-        
+
         val contactsJson = preferences[EMERGENCY_CONTACTS] ?: "[]"
         val emergencyContacts = try {
             Json.decodeFromString<List<EmergencyContact>>(contactsJson)
         } catch (e: Exception) {
             emptyList()
         }
-        
+
         UserPreferences(
             isSetupCompleted = isSetupCompleted,
             voiceTriggerEnabled = voiceTriggerEnabled,
@@ -61,7 +62,7 @@ class PreferencesRepository(private val context: Context) {
             emergencyContacts = emergencyContacts
         )
     }
-    
+
     /**
      * Update setup completed status
      */
@@ -70,7 +71,7 @@ class PreferencesRepository(private val context: Context) {
             preferences[IS_SETUP_COMPLETED] = isCompleted
         }
     }
-    
+
     /**
      * Update voice trigger settings
      */
@@ -80,7 +81,7 @@ class PreferencesRepository(private val context: Context) {
             preferences[VOICE_TRIGGER_PHRASE] = phrase
         }
     }
-    
+
     /**
      * Update location sharing setting
      */
@@ -89,7 +90,7 @@ class PreferencesRepository(private val context: Context) {
             preferences[LOCATION_SHARING_ENABLED] = enabled
         }
     }
-    
+
     /**
      * Update notifications setting
      */
@@ -98,7 +99,7 @@ class PreferencesRepository(private val context: Context) {
             preferences[NOTIFICATIONS_ENABLED] = enabled
         }
     }
-    
+
     /**
      * Update alert countdown seconds
      */
@@ -107,7 +108,7 @@ class PreferencesRepository(private val context: Context) {
             preferences[ALERT_COUNTDOWN_SECONDS] = seconds
         }
     }
-    
+
     /**
      * Update emergency contacts
      */
@@ -117,7 +118,7 @@ class PreferencesRepository(private val context: Context) {
             preferences[EMERGENCY_CONTACTS] = contactsJson
         }
     }
-    
+
     /**
      * Add an emergency contact
      */
@@ -126,7 +127,7 @@ class PreferencesRepository(private val context: Context) {
         val updatedContacts = currentContacts + contact
         updateEmergencyContacts(updatedContacts)
     }
-    
+
     /**
      * Remove an emergency contact
      */
@@ -135,12 +136,12 @@ class PreferencesRepository(private val context: Context) {
         val updatedContacts = currentContacts.filter { it.id != contactId }
         updateEmergencyContacts(updatedContacts)
     }
-    
+
     /**
      * Get current emergency contacts
      */
     private suspend fun getCurrentEmergencyContacts(): List<EmergencyContact> {
-        val preferences = context.dataStore.data.map { it[EMERGENCY_CONTACTS] ?: "[]" }.firstOrNull() ?: "[]"
+        val preferences = context.dataStore.data.map { it[EMERGENCY_CONTACTS] ?: "[]" }.first()
         return try {
             Json.decodeFromString<List<EmergencyContact>>(preferences)
         } catch (e: Exception) {

@@ -11,6 +11,7 @@ import com.cite012a_cs32s1.ciphertrigger.di.AppModule
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
+import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 
@@ -28,7 +29,15 @@ class SetupViewModel(application: Application) : AndroidViewModel(application) {
 
     init {
         // Initialize by loading saved preferences
-        loadSavedPreferences()
+        viewModelScope.launch {
+            val preferences = preferencesRepository.userPreferencesFlow.first()
+            _setupState.update {
+                it.copy(
+                    voiceTriggerEnabled = preferences.voiceTriggerEnabled,
+                    voiceTriggerPhrase = preferences.voiceTriggerPhrase
+                )
+            }
+        }
     }
 
     /**
