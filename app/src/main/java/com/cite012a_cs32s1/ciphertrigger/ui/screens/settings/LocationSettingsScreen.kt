@@ -101,7 +101,7 @@ fun LocationSettingsScreen(
                             imageVector = Icons.Default.LocationOn,
                             contentDescription = null,
                             tint = MaterialTheme.colorScheme.primary,
-                            modifier = Modifier.height(72.dp)
+                            modifier = Modifier.height(140.dp)
                         )
 
                         Spacer(modifier = Modifier.height(16.dp))

@@ -32,12 +32,14 @@ import com.cite012a_cs32s1.ciphertrigger.ui.theme.SuccessGreen
  * Status indicator component for showing service status
  * The icon is a button that toggles the feature on/off
  * The text is clickable and navigates to the corresponding settings page
+ * If isAvailable is false, the icon will be red and unclickable
  */
 @Composable
 fun StatusIndicator(
     icon: ImageVector,
     title: String,
     isActive: Boolean,
+    isAvailable: Boolean = true,
     onToggle: ((Boolean) -> Unit)? = null,
     onNavigateToSettings: () -> Unit = {}
 ) {
@@ -47,19 +49,31 @@ fun StatusIndicator(
         modifier = Modifier.padding(vertical = 8.dp),
         verticalAlignment = Alignment.CenterVertically
     ) {
-        // Icon button to toggle the feature
-        IconButton(
-            onClick = {
-                val newValue = !isActive
-                onToggle?.invoke(newValue)
-            },
-            modifier = Modifier.size(40.dp)
-        ) {
+        if (isAvailable) {
+            // Icon button to toggle the feature (only clickable if available)
+            IconButton(
+                onClick = {
+                    val newValue = !isActive
+                    onToggle?.invoke(newValue)
+                },
+                modifier = Modifier.size(40.dp)
+            ) {
+                Icon(
+                    imageVector = icon,
+                    contentDescription = if (isActive) "Disable $title" else "Enable $title",
+                    tint = if (isActive) SuccessGreen else MaterialTheme.colorScheme.onSurfaceVariant,
+                    modifier = Modifier.size(24.dp)
+                )
+            }
+        } else {
+            // Non-clickable icon with red tint when unavailable
             Icon(
                 imageVector = icon,
-                contentDescription = if (isActive) "Disable $title" else "Enable $title",
-                tint = if (isActive) SuccessGreen else MaterialTheme.colorScheme.onSurfaceVariant,
-                modifier = Modifier.size(24.dp)
+                contentDescription = "$title Unavailable",
+                tint = MaterialTheme.colorScheme.error,
+                modifier = Modifier
+                    .size(40.dp)
+                    .padding(8.dp)
             )
         }
 
@@ -82,12 +96,14 @@ fun StatusIndicator(
  * Status indicator component for showing service status with a Painter resource
  * The icon is a button that toggles the feature on/off
  * The text is clickable and navigates to the corresponding settings page
+ * If isAvailable is false, the icon will be red and unclickable
  */
 @Composable
 fun StatusIndicator(
     iconPainter: Painter,
     title: String,
     isActive: Boolean,
+    isAvailable: Boolean = true,
     onToggle: ((Boolean) -> Unit)? = null,
     onNavigateToSettings: () -> Unit = {}
 ) {
@@ -97,19 +113,31 @@ fun StatusIndicator(
         modifier = Modifier.padding(vertical = 8.dp),
         verticalAlignment = Alignment.CenterVertically
     ) {
-        // Icon button to toggle the feature
-        IconButton(
-            onClick = {
-                val newValue = !isActive
-                onToggle?.invoke(newValue)
-            },
-            modifier = Modifier.size(40.dp)
-        ) {
+        if (isAvailable) {
+            // Icon button to toggle the feature (only clickable if available)
+            IconButton(
+                onClick = {
+                    val newValue = !isActive
+                    onToggle?.invoke(newValue)
+                },
+                modifier = Modifier.size(40.dp)
+            ) {
+                Icon(
+                    painter = iconPainter,
+                    contentDescription = if (isActive) "Disable ${title}" else "Enable ${title}",
+                    tint = if (isActive) SuccessGreen else MaterialTheme.colorScheme.onSurfaceVariant,
+                    modifier = Modifier.size(24.dp)
+                )
+            }
+        } else {
+            // Non-clickable icon with red tint when unavailable
             Icon(
                 painter = iconPainter,
-                contentDescription = if (isActive) "Disable ${title}" else "Enable ${title}",
-                tint = if (isActive) SuccessGreen else MaterialTheme.colorScheme.onSurfaceVariant,
-                modifier = Modifier.size(24.dp)
+                contentDescription = "$title Unavailable",
+                tint = MaterialTheme.colorScheme.error,
+                modifier = Modifier
+                    .size(40.dp)
+                    .padding(8.dp)
             )
         }
 

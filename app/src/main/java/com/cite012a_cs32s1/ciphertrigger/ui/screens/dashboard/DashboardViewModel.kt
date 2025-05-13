@@ -58,7 +58,8 @@ class DashboardViewModel(application: Application) : AndroidViewModel(applicatio
             locationServicesEnabled = locationPermission && preferences.locationSharingEnabled,
             emergencyContacts = preferences.emergencyContacts,
             hasMicrophonePermission = microphonePermission,
-            isMicrophoneAvailable = microphoneAvailable
+            isMicrophoneAvailable = microphoneAvailable,
+            hasLocationPermission = locationPermission
         )
     }.stateIn(
         scope = viewModelScope,
@@ -184,5 +185,6 @@ data class DashboardState(
     val locationServicesEnabled: Boolean = false,
     val emergencyContacts: List<EmergencyContact> = emptyList(),
     val hasMicrophonePermission: Boolean = false,
-    val isMicrophoneAvailable: Boolean = true
+    val isMicrophoneAvailable: Boolean = true,
+    val hasLocationPermission: Boolean = false
 )

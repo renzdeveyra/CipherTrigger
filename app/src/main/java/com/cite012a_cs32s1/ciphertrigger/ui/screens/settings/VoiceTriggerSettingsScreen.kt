@@ -186,75 +186,73 @@ fun VoiceTriggerSettingsScreen(
                     }
                 }
 
-                if (settingsState.voiceTriggerEnabled) {
-                    Card(
-                        modifier = Modifier
-                            .fillMaxWidth()
-                            .padding(vertical = 8.dp)
+                Card(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(vertical = 8.dp)
+                ) {
+                    Column(
+                        modifier = Modifier.padding(16.dp)
                     ) {
-                        Column(
-                            modifier = Modifier.padding(16.dp)
-                        ) {
-                            Text(
-                                text = "Trigger Phrase",
-                                style = MaterialTheme.typography.titleMedium,
-                                fontWeight = FontWeight.Bold
-                            )
+                        Text(
+                            text = "Trigger Phrase",
+                            style = MaterialTheme.typography.titleMedium,
+                            fontWeight = FontWeight.Bold
+                        )
 
-                            Spacer(modifier = Modifier.height(8.dp))
+                        Spacer(modifier = Modifier.height(8.dp))
 
-                            Text(
-                                text = "Enter a phrase that will trigger the SOS alert when spoken. Choose something you can say easily in an emergency but is unlikely to be said in normal conversation.",
-                                style = MaterialTheme.typography.bodyMedium
-                            )
+                        Text(
+                            text = "Enter a phrase that will trigger the SOS alert when spoken. Choose something you can say easily in an emergency but is unlikely to be said in normal conversation.",
+                            style = MaterialTheme.typography.bodyMedium
+                        )
 
-                            Spacer(modifier = Modifier.height(16.dp))
+                        Spacer(modifier = Modifier.height(16.dp))
 
-                            OutlinedTextField(
-                                value = settingsState.voiceTriggerPhrase,
-                                onValueChange = { phrase ->
-                                    if (phrase.isNotBlank()) {
-                                        viewModel.updateVoiceTriggerSettings(settingsState.voiceTriggerEnabled, phrase)
-                                    }
-                                },
-                                modifier = Modifier.fillMaxWidth(),
-                                label = { Text("Trigger Phrase") },
-                                singleLine = true
-                            )
+                        OutlinedTextField(
+                            value = settingsState.voiceTriggerPhrase,
+                            onValueChange = { phrase ->
+                                if (phrase.isNotBlank()) {
+                                    viewModel.updateVoiceTriggerSettings(settingsState.voiceTriggerEnabled, phrase)
+                                }
+                            },
+                            modifier = Modifier.fillMaxWidth(),
+                            label = { Text("Trigger Phrase") },
+                            singleLine = true
+                        )
 
-                            Spacer(modifier = Modifier.height(8.dp))
+                        Spacer(modifier = Modifier.height(8.dp))
 
-                            Text(
-                                text = "Example phrases: \"help me\", \"emergency\", \"SOS\"",
-                                style = MaterialTheme.typography.bodySmall
-                            )
-                        }
+                        Text(
+                            text = "Example phrases: \"help me\", \"emergency\", \"SOS\"",
+                            style = MaterialTheme.typography.bodySmall
+                        )
                     }
+                }
 
-                    Card(
-                        modifier = Modifier
-                            .fillMaxWidth()
-                            .padding(vertical = 8.dp)
+                Card(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(vertical = 8.dp)
+                ) {
+                    Column(
+                        modifier = Modifier.padding(16.dp)
                     ) {
-                        Column(
-                            modifier = Modifier.padding(16.dp)
-                        ) {
-                            Text(
-                                text = "Important Notes",
-                                style = MaterialTheme.typography.titleMedium,
-                                fontWeight = FontWeight.Bold
-                            )
+                        Text(
+                            text = "Important Notes",
+                            style = MaterialTheme.typography.titleMedium,
+                            fontWeight = FontWeight.Bold
+                        )
 
-                            Spacer(modifier = Modifier.height(8.dp))
+                        Spacer(modifier = Modifier.height(8.dp))
 
-                            Text(
-                                text = "• Voice recognition works best in quiet environments\n" +
-                                      "• Battery usage will increase when voice trigger is enabled\n" +
-                                      "• The app needs to be running in the background for voice trigger to work\n" +
-                                      "• Voice recognition may not work if the device is in battery saving mode",
-                                style = MaterialTheme.typography.bodyMedium
-                            )
-                        }
+                        Text(
+                            text = "• Voice recognition works best in quiet environments\n" +
+                                  "• Battery usage will increase when voice trigger is enabled\n" +
+                                  "• The app needs to be running in the background for voice trigger to work\n" +
+                                  "• Voice recognition may not work if the device is in battery saving mode",
+                            style = MaterialTheme.typography.bodyMedium
+                        )
                     }
                 }
             }

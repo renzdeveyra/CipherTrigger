@@ -110,119 +110,28 @@ fun DashboardScreen(
 
                     Spacer(modifier = Modifier.height(8.dp))
 
-                    if (!dashboardState.hasMicrophonePermission) {
-                        // Show permission required card
-                        Card(
-                            modifier = Modifier
-                                .fillMaxWidth()
-                                .padding(vertical = 8.dp)
-                        ) {
-                            Column(
-                                modifier = Modifier.padding(16.dp),
-                                horizontalAlignment = Alignment.CenterHorizontally
-                            ) {
-                                Icon(
-                                    painter = painterResource(id = drawable.ic_mic),
-                                    contentDescription = null,
-                                    tint = MaterialTheme.colorScheme.error,
-                                    modifier = Modifier.size(36.dp)
-                                )
-
-                                Spacer(modifier = Modifier.height(8.dp))
-
-                                Text(
-                                    text = "Microphone Permission Required",
-                                    style = MaterialTheme.typography.titleMedium,
-                                    fontWeight = FontWeight.Bold,
-                                    textAlign = TextAlign.Center
-                                )
-
-                                Spacer(modifier = Modifier.height(8.dp))
-
-                                Text(
-                                    text = "Voice trigger requires microphone access",
-                                    style = MaterialTheme.typography.bodyMedium,
-                                    textAlign = TextAlign.Center
-                                )
-
-                                Spacer(modifier = Modifier.height(16.dp))
-
-                                Button(
-                                    onClick = {
-                                        onNavigateToVoiceTriggerSettings()
-                                    }
-                                ) {
-                                    Text("Configure")
-                                }
-                            }
+                    // Voice Trigger Status Indicator
+                    StatusIndicator(
+                        iconPainter = painterResource(id = drawable.ic_mic),
+                        title = stringResource(R.string.voice_trigger_status),
+                        isActive = dashboardState.voiceTriggerEnabled,
+                        isAvailable = dashboardState.hasMicrophonePermission && dashboardState.isMicrophoneAvailable,
+                        onToggle = { enabled ->
+                            viewModel.updateVoiceTriggerStatus(enabled)
+                        },
+                        onNavigateToSettings = {
+                            onNavigateToVoiceTriggerSettings()
                         }
-                    } else if (!dashboardState.isMicrophoneAvailable) {
-                        // Show microphone unavailable card
-                        Card(
-                            modifier = Modifier
-                                .fillMaxWidth()
-                                .padding(vertical = 8.dp)
-                        ) {
-                            Column(
-                                modifier = Modifier.padding(16.dp),
-                                horizontalAlignment = Alignment.CenterHorizontally
-                            ) {
-                                Icon(
-                                    painter = painterResource(id = drawable.ic_mic),
-                                    contentDescription = null,
-                                    tint = MaterialTheme.colorScheme.error,
-                                    modifier = Modifier.size(36.dp)
-                                )
-
-                                Spacer(modifier = Modifier.height(8.dp))
-
-                                Text(
-                                    text = "Microphone Unavailable",
-                                    style = MaterialTheme.typography.titleMedium,
-                                    fontWeight = FontWeight.Bold,
-                                    textAlign = TextAlign.Center
-                                )
-
-                                Spacer(modifier = Modifier.height(8.dp))
-
-                                Text(
-                                    text = "Another app is using the microphone. Voice trigger cannot be enabled.",
-                                    style = MaterialTheme.typography.bodyMedium,
-                                    textAlign = TextAlign.Center
-                                )
-
-                                Spacer(modifier = Modifier.height(16.dp))
-
-                                Button(
-                                    onClick = {
-                                        // Refresh microphone state
-                                        viewModel.checkMicrophonePermission()
-                                    }
-                                ) {
-                                    Text("Retry")
-                                }
-                            }
-                        }
-                    } else {
-                        StatusIndicator(
-                            iconPainter = painterResource(id = drawable.ic_mic),
-                            title = stringResource(R.string.voice_trigger_status),
-                            isActive = dashboardState.voiceTriggerEnabled,
-                            onToggle = { enabled ->
-                                viewModel.updateVoiceTriggerStatus(enabled)
-                            },
-                            onNavigateToSettings = {
-                                onNavigateToVoiceTriggerSettings()
-                            }
-                        )
-                    }
+                    )
 
                     Spacer(modifier = Modifier.height(8.dp))
 
+                    // Location Services Status Indicator
                     StatusIndicator(
                         icon = Icons.Default.LocationOn,
                         title = stringResource(R.string.location_services_status),
                         isActive = dashboardState.locationServicesEnabled,
+                        isAvailable = dashboardState.hasLocationPermission,
                         onToggle = { enabled ->
                             viewModel.updateLocationServicesStatus(enabled)
                         },
