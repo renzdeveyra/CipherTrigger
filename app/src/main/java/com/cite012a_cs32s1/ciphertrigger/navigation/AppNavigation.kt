@@ -56,6 +56,13 @@ fun AppNavigation(
                     },
                     onNavigateBack = {
                         navController.popBackStack()
+                    },
+                    onFinishSetup = {
+                        android.util.Log.d("AppNavigation", "onFinishSetup called for PermissionsSetup, navigating to Dashboard")
+                        navController.navigate(Screen.Dashboard.route) {
+                            popUpTo(Screen.Setup.route) { inclusive = true }
+                        }
+                        android.util.Log.d("AppNavigation", "Navigation to Dashboard completed")
                     }
                 )
             }
@@ -68,6 +75,11 @@ fun AppNavigation(
                     },
                     onNavigateBack = {
                         navController.popBackStack()
+                    },
+                    onFinishSetup = {
+                        navController.navigate(Screen.Dashboard.route) {
+                            popUpTo(Screen.Setup.route) { inclusive = true }
+                        }
                     }
                 )
             }
@@ -159,6 +171,9 @@ fun AppNavigation(
                 ContactsSettingsScreen(
                     onNavigateBack = {
                         navController.popBackStack()
+                    },
+                    onNavigateToPermissionsSetup = {
+                        navController.navigate(Screen.PermissionsSetup.route)
                     }
                 )
             }
@@ -167,6 +182,9 @@ fun AppNavigation(
                 VoiceTriggerSettingsScreen(
                     onNavigateBack = {
                         navController.popBackStack()
+                    },
+                    onNavigateToPermissionsSetup = {
+                        navController.navigate(Screen.PermissionsSetup.route)
                     }
                 )
             }
@@ -175,6 +193,9 @@ fun AppNavigation(
                 LocationSettingsScreen(
                     onNavigateBack = {
                         navController.popBackStack()
+                    },
+                    onNavigateToPermissionsSetup = {
+                        navController.navigate(Screen.PermissionsSetup.route)
                     }
                 )
             }

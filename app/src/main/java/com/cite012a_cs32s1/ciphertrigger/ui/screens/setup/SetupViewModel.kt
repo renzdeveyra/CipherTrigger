@@ -20,7 +20,7 @@ import kotlinx.coroutines.launch
  */
 class SetupViewModel(application: Application) : AndroidViewModel(application) {
 
-    private val preferencesRepository = AppModule.providePreferencesRepository(application)
+    val preferencesRepository = AppModule.providePreferencesRepository(application)
     private val contactRepository = AppModule.provideContactRepository(application)
     private val locationRepository = AppModule.provideLocationRepository(application)
 
@@ -130,8 +130,11 @@ class SetupViewModel(application: Application) : AndroidViewModel(application) {
      * Complete setup
      */
     fun completeSetup() {
+        android.util.Log.d("SetupViewModel", "completeSetup() called")
         viewModelScope.launch {
+            android.util.Log.d("SetupViewModel", "Updating setup completed to true")
             preferencesRepository.updateSetupCompleted(true)
+            android.util.Log.d("SetupViewModel", "Setup completed updated to true")
         }
     }
 }

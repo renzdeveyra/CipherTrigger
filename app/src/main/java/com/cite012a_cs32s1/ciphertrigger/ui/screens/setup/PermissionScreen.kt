@@ -45,13 +45,14 @@ import com.google.accompanist.permissions.rememberMultiplePermissionsState
 fun PermissionScreen(
     viewModel: SetupViewModel = viewModel(),
     onNavigateNext: () -> Unit = {},
-    onNavigateBack: () -> Unit = {}
+    onNavigateBack: () -> Unit = {},
+    onFinishSetup: () -> Unit = {}
 ) {
     val context = LocalContext.current
     val setupState by viewModel.setupState.collectAsState()
     val scope = rememberCoroutineScope()
     val snackbarHostState = remember { SnackbarHostState() }
-    
+
     // Create permission states for each permission group
     val locationPermissionsState = rememberMultiplePermissionsState(
         permissions = listOf(
@@ -59,36 +60,36 @@ fun PermissionScreen(
             Manifest.permission.ACCESS_COARSE_LOCATION
         )
     )
-    
+
     val contactsPermissionState = rememberMultiplePermissionsState(
         permissions = listOf(
             Manifest.permission.READ_CONTACTS
         )
     )
-    
+
     val microphonePermissionState = rememberMultiplePermissionsState(
         permissions = listOf(
             Manifest.permission.RECORD_AUDIO
         )
     )
-    
+
     val smsPermissionState = rememberMultiplePermissionsState(
         permissions = listOf(
             Manifest.permission.SEND_SMS
         )
     )
-    
+
     val phonePermissionState = rememberMultiplePermissionsState(
         permissions = listOf(
             Manifest.permission.CALL_PHONE
         )
     )
-    
+
     // Check permissions when the screen is first displayed
     LaunchedEffect(key1 = Unit) {
         viewModel.checkPermissions()
     }
-    
+
     // Update the ViewModel when permissions change
     LaunchedEffect(
         key1 = locationPermissionsState.allPermissionsGranted,
@@ -96,7 +97,7 @@ fun PermissionScreen(
     ) {
         viewModel.checkPermissions()
     }
-    
+
     Scaffold(
         snackbarHost = { SnackbarHost(snackbarHostState) }
     ) { paddingValues ->
@@ -115,17 +116,17 @@ fun PermissionScreen(
                 fontWeight = FontWeight.Bold,
                 textAlign = TextAlign.Center
             )
-            
+
             Spacer(modifier = Modifier.height(8.dp))
-            
+
             Text(
                 text = "CipherTrigger needs the following permissions to function properly:",
                 style = MaterialTheme.typography.bodyLarge,
                 textAlign = TextAlign.Center
             )
-            
+
             Spacer(modifier = Modifier.height(24.dp))
-            
+
             // Location permission
             PermissionCard(
                 title = "Location",
@@ -138,9 +139,9 @@ fun PermissionScreen(
                     PermissionUtils.openAppSettings(context)
                 }
             )
-            
+
             Spacer(modifier = Modifier.height(16.dp))
-            
+
             // Contacts permission
             PermissionCard(
                 title = "Contacts",
@@ -153,9 +154,9 @@ fun PermissionScreen(
                     PermissionUtils.openAppSettings(context)
                 }
             )
-            
+
             Spacer(modifier = Modifier.height(16.dp))
-            
+
             // Microphone permission
             PermissionCard(
                 title = "Microphone",
@@ -168,9 +169,9 @@ fun PermissionScreen(
                     PermissionUtils.openAppSettings(context)
                 }
             )
-            
+
             Spacer(modifier = Modifier.height(16.dp))
-            
+
             // SMS permission
             PermissionCard(
                 title = "SMS",
@@ -183,9 +184,9 @@ fun PermissionScreen(
                     PermissionUtils.openAppSettings(context)
                 }
             )
-            
+
             Spacer(modifier = Modifier.height(16.dp))
-            
+
             // Phone permission
             PermissionCard(
                 title = "Phone",
@@ -198,27 +199,62 @@ fun PermissionScreen(
                     PermissionUtils.openAppSettings(context)
                 }
             )
-            
+
             Spacer(modifier = Modifier.height(32.dp))
-            
+
             // Continue button
             Button(
                 onClick = { onNavigateNext() },
                 modifier = Modifier.fillMaxWidth(),
-                enabled = locationPermissionsState.allPermissionsGranted && 
+                enabled = locationPermissionsState.allPermissionsGranted &&
                           contactsPermissionState.allPermissionsGranted
             ) {
                 Text("Continue")
             }
-            
+
             Spacer(modifier = Modifier.height(16.dp))
-            
-            // Skip button (for development purposes)
-            Button(
-                onClick = { onNavigateNext() },
-                modifier = Modifier.fillMaxWidth()
+
+            // Skip button - make it more prominent
+            androidx.compose.material3.OutlinedButton(
+                onClick = {
+                    // Add a log statement for debugging
+                    android.util.Log.d("PermissionScreen", "Skip button clicked, calling completeSetup()")
+                    // Use a simpler approach
+                    viewModel.completeSetup()
+                    android.util.Log.d("PermissionScreen", "Called completeSetup()")
+
+                    // Call onFinishSetup to navigate to dashboard
+                    onFinishSetup()
+                    android.util.Log.d("PermissionScreen", "Called onFinishSetup()")
+                },
+                modifier = Modifier.fillMaxWidth(),
+                colors = androidx.compose.material3.ButtonDefaults.outlinedButtonColors(
+                    contentColor = androidx.compose.material3.MaterialTheme.colorScheme.error
+                )
             ) {
                 Text("Skip Permissions (Not Recommended)")
+            }
+
+            Spacer(modifier = Modifier.height(16.dp))
+
+            // Direct navigation button with a simpler approach
+            androidx.compose.material3.Button(
+                onClick = {
+                    android.util.Log.d("PermissionScreen", "Direct navigation button clicked")
+                    // Use a simpler approach
+                    viewModel.completeSetup()
+                    android.util.Log.d("PermissionScreen", "Called completeSetup() from direct button")
+
+                    // Call onFinishSetup to navigate to dashboard
+                    onFinishSetup()
+                    android.util.Log.d("PermissionScreen", "Called onFinishSetup() from direct button")
+                },
+                modifier = Modifier.fillMaxWidth(),
+                colors = androidx.compose.material3.ButtonDefaults.buttonColors(
+                    containerColor = androidx.compose.material3.MaterialTheme.colorScheme.tertiary
+                )
+            ) {
+                Text("Go to Dashboard")
             }
         }
     }

@@ -53,7 +53,8 @@ import kotlinx.coroutines.launch
 @Composable
 fun VoiceTriggerSettingsScreen(
     viewModel: SettingsViewModel = viewModel(),
-    onNavigateBack: () -> Unit = {}
+    onNavigateBack: () -> Unit = {},
+    onNavigateToPermissionsSetup: () -> Unit = {}
 ) {
     val context = LocalContext.current
     val settingsState by viewModel.settingsState.collectAsState()
@@ -126,11 +127,11 @@ fun VoiceTriggerSettingsScreen(
 
                         Button(
                             onClick = {
-                                PermissionUtils.openAppSettings(context)
+                                onNavigateToPermissionsSetup()
                             },
                             modifier = Modifier.fillMaxWidth()
                         ) {
-                            Text("Open Settings")
+                            Text("Setup Permissions")
                         }
                     }
                 }
@@ -265,6 +266,6 @@ fun VoiceTriggerSettingsScreen(
 @Composable
 fun VoiceTriggerSettingsScreenPreview() {
     CipherTriggerTheme {
-        VoiceTriggerSettingsScreen()
+        VoiceTriggerSettingsScreen(onNavigateToPermissionsSetup = {})
     }
 }

@@ -57,7 +57,8 @@ import com.cite012a_cs32s1.ciphertrigger.ui.theme.CipherTriggerTheme
 fun ContactsSetupScreenImpl(
     viewModel: SetupViewModel,
     onNavigateNext: () -> Unit = {},
-    onNavigateBack: () -> Unit = {}
+    onNavigateBack: () -> Unit = {},
+    onFinishSetup: () -> Unit = {}
 ) {
     val context = LocalContext.current
     val setupState by viewModel.setupState.collectAsState()
@@ -141,7 +142,10 @@ fun ContactsSetupScreenImpl(
                 Spacer(modifier = Modifier.height(16.dp))
 
                 Button(
-                    onClick = { onNavigateNext() },
+                    onClick = {
+                        viewModel.completeSetup()
+                        onFinishSetup()
+                    },
                     modifier = Modifier.fillMaxWidth()
                 ) {
                     Text("Skip (Not Recommended)")

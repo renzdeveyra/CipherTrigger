@@ -71,20 +71,35 @@ fun SetupScreen(
 
     when (setupStep) {
         SetupStep.WELCOME -> WelcomeScreen(
+            viewModel = viewModel,
             onNavigateNext = { onNavigateToContacts() },
-            onSkipSetup = { onFinishSetup() }
+            onSkipSetup = {
+                viewModel.completeSetup()
+                onFinishSetup()
+            }
         )
 
         SetupStep.PERMISSIONS -> PermissionScreen(
             viewModel = viewModel,
             onNavigateNext = { onNavigateToVoiceTrigger() },
-            onNavigateBack = { onNavigateBack() }
+            onNavigateBack = { onNavigateBack() },
+            onFinishSetup = {
+                android.util.Log.d("SetupScreen", "onFinishSetup called for PermissionScreen")
+                viewModel.completeSetup()
+                android.util.Log.d("SetupScreen", "Calling parent onFinishSetup")
+                onFinishSetup()
+                android.util.Log.d("SetupScreen", "Parent onFinishSetup called")
+            }
         )
 
         SetupStep.CONTACTS -> ContactsSetupScreen(
             viewModel = viewModel,
             onNavigateNext = { onNavigateToVoiceTrigger() },
-            onNavigateBack = { onNavigateBack() }
+            onNavigateBack = { onNavigateBack() },
+            onFinishSetup = {
+                viewModel.completeSetup()
+                onFinishSetup()
+            }
         )
 
         SetupStep.VOICE_TRIGGER -> VoiceTriggerSetupScreen(
@@ -103,6 +118,7 @@ fun SetupScreen(
  */
 @Composable
 fun WelcomeScreen(
+    viewModel: SetupViewModel,
     onNavigateNext: () -> Unit = {},
     onSkipSetup: () -> Unit = {}
 ) {
@@ -157,12 +173,14 @@ fun WelcomeScreen(
 fun ContactsSetupScreen(
     viewModel: SetupViewModel,
     onNavigateNext: () -> Unit = {},
-    onNavigateBack: () -> Unit = {}
+    onNavigateBack: () -> Unit = {},
+    onFinishSetup: () -> Unit = {}
 ) {
     ContactsSetupScreenImpl(
         viewModel = viewModel,
         onNavigateNext = onNavigateNext,
-        onNavigateBack = onNavigateBack
+        onNavigateBack = onNavigateBack,
+        onFinishSetup = onFinishSetup
     )
 }
 
@@ -515,7 +533,7 @@ enum class SetupStep {
 @Composable
 fun WelcomeScreenPreview() {
     CipherTriggerTheme {
-        WelcomeScreen()
+        WelcomeScreen(viewModel = viewModel())
     }
 }
 

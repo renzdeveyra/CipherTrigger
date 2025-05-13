@@ -51,7 +51,8 @@ import kotlinx.coroutines.launch
 @Composable
 fun LocationSettingsScreen(
     viewModel: SettingsViewModel = viewModel(),
-    onNavigateBack: () -> Unit = {}
+    onNavigateBack: () -> Unit = {},
+    onNavigateToPermissionsSetup: () -> Unit = {}
 ) {
     val context = LocalContext.current
     val settingsState by viewModel.settingsState.collectAsState()
@@ -123,11 +124,11 @@ fun LocationSettingsScreen(
 
                         Button(
                             onClick = {
-                                PermissionUtils.openAppSettings(context)
+                                onNavigateToPermissionsSetup()
                             },
                             modifier = Modifier.fillMaxWidth()
                         ) {
-                            Text("Open Settings")
+                            Text("Setup Permissions")
                         }
                     }
                 }
@@ -240,6 +241,6 @@ fun LocationSettingsScreen(
 @Composable
 fun LocationSettingsScreenPreview() {
     CipherTriggerTheme {
-        LocationSettingsScreen()
+        LocationSettingsScreen(onNavigateToPermissionsSetup = {})
     }
 }

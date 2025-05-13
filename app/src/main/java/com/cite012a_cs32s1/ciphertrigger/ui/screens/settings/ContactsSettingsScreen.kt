@@ -61,7 +61,8 @@ import kotlinx.coroutines.launch
 @Composable
 fun ContactsSettingsScreen(
     viewModel: SettingsViewModel = viewModel(),
-    onNavigateBack: () -> Unit = {}
+    onNavigateBack: () -> Unit = {},
+    onNavigateToPermissionsSetup: () -> Unit = {}
 ) {
     val context = LocalContext.current
     val settingsState by viewModel.settingsState.collectAsState()
@@ -155,11 +156,11 @@ fun ContactsSettingsScreen(
 
                 Button(
                     onClick = {
-                        PermissionUtils.openAppSettings(context)
+                        onNavigateToPermissionsSetup()
                     },
                     modifier = Modifier.fillMaxWidth()
                 ) {
-                    Text("Open Settings")
+                    Text("Setup Permissions")
                 }
             }
         } else if (showContactSelector) {
@@ -202,10 +203,10 @@ fun ContactsSettingsScreen(
                     contentPadding = PaddingValues(vertical = 8.dp)
                 ) {
                     items(filteredContacts) { contact ->
-                        val isSelected = settingsState.emergencyContacts.any { 
-                            it.name == contact.name && it.phoneNumber in contact.phoneNumbers 
+                        val isSelected = settingsState.emergencyContacts.any {
+                            it.name == contact.name && it.phoneNumber in contact.phoneNumbers
                         }
-                        
+
                         ContactSelectionItem(
                             contact = contact,
                             isSelected = isSelected,
@@ -362,6 +363,6 @@ fun ContactsSettingsScreen(
 @Composable
 fun ContactsSettingsScreenPreview() {
     CipherTriggerTheme {
-        ContactsSettingsScreen()
+        ContactsSettingsScreen(onNavigateToPermissionsSetup = {})
     }
 }
