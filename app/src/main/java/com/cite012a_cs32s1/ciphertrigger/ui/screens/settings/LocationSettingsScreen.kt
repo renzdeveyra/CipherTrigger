@@ -57,9 +57,9 @@ fun LocationSettingsScreen(
     val settingsState by viewModel.settingsState.collectAsState()
     val scope = rememberCoroutineScope()
     val snackbarHostState = remember { SnackbarHostState() }
-    
-    var locationSharingEnabled by remember { mutableStateOf(settingsState.locationSharingEnabled) }
-    
+
+    // Use the state directly from the Flow instead of local state variables
+
     Scaffold(
         topBar = {
             TopAppBar(
@@ -102,25 +102,25 @@ fun LocationSettingsScreen(
                             tint = MaterialTheme.colorScheme.primary,
                             modifier = Modifier.height(72.dp)
                         )
-                        
+
                         Spacer(modifier = Modifier.height(16.dp))
-                        
+
                         Text(
                             text = "Location Permission Required",
                             style = MaterialTheme.typography.headlineSmall,
                             textAlign = TextAlign.Center
                         )
-                        
+
                         Spacer(modifier = Modifier.height(8.dp))
-                        
+
                         Text(
                             text = "To share your location during an emergency, you need to grant location permission.",
                             style = MaterialTheme.typography.bodyLarge,
                             textAlign = TextAlign.Center
                         )
-                        
+
                         Spacer(modifier = Modifier.height(24.dp))
-                        
+
                         Button(
                             onClick = {
                                 PermissionUtils.openAppSettings(context)
@@ -150,21 +150,20 @@ fun LocationSettingsScreen(
                                 contentDescription = null,
                                 tint = MaterialTheme.colorScheme.primary
                             )
-                            
+
                             Spacer(modifier = Modifier.width(16.dp))
-                            
+
                             Text(
                                 text = "Location Sharing",
                                 style = MaterialTheme.typography.titleLarge,
                                 fontWeight = FontWeight.Bold
                             )
-                            
+
                             Spacer(modifier = Modifier.weight(1f))
-                            
+
                             Switch(
-                                checked = locationSharingEnabled,
+                                checked = settingsState.locationSharingEnabled,
                                 onCheckedChange = { enabled ->
-                                    locationSharingEnabled = enabled
                                     viewModel.updateLocationSharing(enabled)
                                     scope.launch {
                                         snackbarHostState.showSnackbar(
@@ -174,16 +173,16 @@ fun LocationSettingsScreen(
                                 }
                             )
                         }
-                        
+
                         Spacer(modifier = Modifier.height(16.dp))
-                        
+
                         Text(
                             text = "When enabled, your current location will be shared with your emergency contacts when you trigger an SOS alert.",
                             style = MaterialTheme.typography.bodyMedium
                         )
                     }
                 }
-                
+
                 Card(
                     modifier = Modifier
                         .fillMaxWidth()
@@ -197,9 +196,9 @@ fun LocationSettingsScreen(
                             style = MaterialTheme.typography.titleMedium,
                             fontWeight = FontWeight.Bold
                         )
-                        
+
                         Spacer(modifier = Modifier.height(8.dp))
-                        
+
                         Text(
                             text = "• Your location is only shared when you trigger an SOS alert\n" +
                                   "• Location is shared via SMS with your emergency contacts\n" +
@@ -209,7 +208,7 @@ fun LocationSettingsScreen(
                         )
                     }
                 }
-                
+
                 Card(
                     modifier = Modifier
                         .fillMaxWidth()
@@ -223,9 +222,9 @@ fun LocationSettingsScreen(
                             style = MaterialTheme.typography.titleMedium,
                             fontWeight = FontWeight.Bold
                         )
-                        
+
                         Spacer(modifier = Modifier.height(8.dp))
-                        
+
                         Text(
                             text = "Your location data is only used during an emergency and is not stored or shared with any third parties. The app does not track your location in the background unless an SOS alert is triggered.",
                             style = MaterialTheme.typography.bodyMedium

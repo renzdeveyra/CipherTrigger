@@ -93,6 +93,12 @@ fun AppNavigation(
                 onNavigateToSettings = {
                     navController.navigate(Screen.Settings.route)
                 },
+                onNavigateToVoiceTriggerSettings = {
+                    navController.navigate(Screen.VoiceTriggerSettings.route)
+                },
+                onNavigateToLocationSettings = {
+                    navController.navigate(Screen.LocationSettings.route)
+                },
                 onTriggerAlert = {
                     navController.navigate(Screen.Alert.route)
                 }

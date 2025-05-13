@@ -32,6 +32,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
@@ -40,6 +41,7 @@ import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import coil.compose.AsyncImage
 import com.cite012a_cs32s1.ciphertrigger.R
+import com.cite012a_cs32s1.ciphertrigger.R.drawable
 import com.cite012a_cs32s1.ciphertrigger.data.models.EmergencyContact
 import com.cite012a_cs32s1.ciphertrigger.ui.components.SOSButton
 import com.cite012a_cs32s1.ciphertrigger.ui.components.StatusIndicator
@@ -53,6 +55,8 @@ import com.cite012a_cs32s1.ciphertrigger.ui.theme.CipherTriggerTheme
 fun DashboardScreen(
     viewModel: DashboardViewModel = viewModel(),
     onNavigateToSettings: () -> Unit = {},
+    onNavigateToVoiceTriggerSettings: () -> Unit = {},
+    onNavigateToLocationSettings: () -> Unit = {},
     onTriggerAlert: () -> Unit = {}
 ) {
     val dashboardState by viewModel.dashboardState.collectAsState()
@@ -101,11 +105,14 @@ fun DashboardScreen(
                     Spacer(modifier = Modifier.height(8.dp))
 
                     StatusIndicator(
-                        icon = Icons.Default.Check,
+                        iconPainter = painterResource(id = drawable.ic_mic),
                         title = stringResource(R.string.voice_trigger_status),
                         isActive = dashboardState.voiceTriggerEnabled,
                         onToggle = { enabled ->
                             viewModel.updateVoiceTriggerStatus(enabled)
+                        },
+                        onNavigateToSettings = {
+                            onNavigateToVoiceTriggerSettings()
                         }
                     )
 
@@ -117,6 +124,9 @@ fun DashboardScreen(
                         isActive = dashboardState.locationServicesEnabled,
                         onToggle = { enabled ->
                             viewModel.updateLocationServicesStatus(enabled)
+                        },
+                        onNavigateToSettings = {
+                            onNavigateToLocationSettings()
                         }
                     )
                 }
@@ -248,9 +258,11 @@ fun DashboardScreenPreview() {
                     Spacer(modifier = Modifier.height(8.dp))
 
                     StatusIndicator(
-                        icon = Icons.Default.Check,
+                        iconPainter = painterResource(id = drawable.ic_mic),
                         title = "Voice Trigger",
-                        isActive = true
+                        isActive = true,
+                        onToggle = {},
+                        onNavigateToSettings = {}
                     )
 
                     Spacer(modifier = Modifier.height(8.dp))
@@ -258,7 +270,9 @@ fun DashboardScreenPreview() {
                     StatusIndicator(
                         icon = Icons.Default.LocationOn,
                         title = "Location Services",
-                        isActive = true
+                        isActive = true,
+                        onToggle = {},
+                        onNavigateToSettings = {}
                     )
                 }
             }

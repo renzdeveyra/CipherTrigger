@@ -54,8 +54,7 @@ fun VoiceTriggerSettingsScreen(
     val scope = rememberCoroutineScope()
     val snackbarHostState = remember { SnackbarHostState() }
 
-    var voiceTriggerEnabled by remember { mutableStateOf(settingsState.voiceTriggerEnabled) }
-    var voiceTriggerPhrase by remember { mutableStateOf(settingsState.voiceTriggerPhrase) }
+    // Use the state directly from the Flow instead of local state variables
 
     Scaffold(
         topBar = {
@@ -109,10 +108,9 @@ fun VoiceTriggerSettingsScreen(
                         Spacer(modifier = Modifier.weight(1f))
 
                         Switch(
-                            checked = voiceTriggerEnabled,
+                            checked = settingsState.voiceTriggerEnabled,
                             onCheckedChange = { enabled ->
-                                voiceTriggerEnabled = enabled
-                                viewModel.updateVoiceTriggerSettings(enabled, voiceTriggerPhrase)
+                                viewModel.updateVoiceTriggerSettings(enabled, settingsState.voiceTriggerPhrase)
                                 scope.launch {
                                     snackbarHostState.showSnackbar(
                                         if (enabled) "Voice trigger enabled" else "Voice trigger disabled"
@@ -131,7 +129,7 @@ fun VoiceTriggerSettingsScreen(
                 }
             }
 
-            if (voiceTriggerEnabled) {
+            if (settingsState.voiceTriggerEnabled) {
                 Card(
                     modifier = Modifier
                         .fillMaxWidth()
@@ -156,11 +154,10 @@ fun VoiceTriggerSettingsScreen(
                         Spacer(modifier = Modifier.height(16.dp))
 
                         OutlinedTextField(
-                            value = voiceTriggerPhrase,
+                            value = settingsState.voiceTriggerPhrase,
                             onValueChange = { phrase ->
                                 if (phrase.isNotBlank()) {
-                                    voiceTriggerPhrase = phrase
-                                    viewModel.updateVoiceTriggerSettings(voiceTriggerEnabled, phrase)
+                                    viewModel.updateVoiceTriggerSettings(settingsState.voiceTriggerEnabled, phrase)
                                 }
                             },
                             modifier = Modifier.fillMaxWidth(),
