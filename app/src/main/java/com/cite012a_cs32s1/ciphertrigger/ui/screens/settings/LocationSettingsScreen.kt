@@ -7,6 +7,7 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
@@ -84,7 +85,7 @@ fun LocationSettingsScreen(
                 .padding(horizontal = 16.dp)
                 .verticalScroll(rememberScrollState())
         ) {
-            if (!settingsState.hasLocationPermission) {
+            if (!settingsState.hasMicrophonePermission) {
                 // Permission not granted UI
                 Card(
                     modifier = Modifier
@@ -101,7 +102,7 @@ fun LocationSettingsScreen(
                             imageVector = Icons.Default.LocationOn,
                             contentDescription = null,
                             tint = MaterialTheme.colorScheme.primary,
-                            modifier = Modifier.height(140.dp)
+                            modifier = Modifier.size(72.dp)
                         )
 
                         Spacer(modifier = Modifier.height(16.dp))
@@ -109,6 +110,7 @@ fun LocationSettingsScreen(
                         Text(
                             text = "Location Permission Required",
                             style = MaterialTheme.typography.headlineSmall,
+                            fontWeight = FontWeight.Bold,
                             textAlign = TextAlign.Center
                         )
 
