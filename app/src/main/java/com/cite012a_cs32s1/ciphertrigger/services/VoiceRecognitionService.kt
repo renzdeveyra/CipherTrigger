@@ -312,12 +312,32 @@ class VoiceRecognitionService : Service() {
         // Stop listening temporarily
         stopListening()
 
-        // Launch the alert screen
-        val alertIntent = Intent(this, MainActivity::class.java).apply {
-            action = "com.cite012a_cs32s1.ciphertrigger.action.TRIGGER_ALERT"
-            flags = Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TOP
+        // Check if there are emergency contacts before triggering alert
+        serviceScope.launch {
+            val preferences = preferencesRepository.userPreferencesFlow.first()
+
+            if (preferences.emergencyContacts.isNotEmpty()) {
+                // Launch the alert screen
+                val alertIntent = Intent(this@VoiceRecognitionService, MainActivity::class.java).apply {
+                    action = "com.cite012a_cs32s1.ciphertrigger.action.TRIGGER_ALERT"
+                    flags = Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TOP
+                }
+                startActivity(alertIntent)
+            } else {
+                // Show a toast notification if there are no emergency contacts
+                android.widget.Toast.makeText(
+                    this@VoiceRecognitionService,
+                    "Please add emergency contacts before triggering an alert",
+                    android.widget.Toast.LENGTH_LONG
+                ).show()
+
+                // Restart listening after a short delay
+                kotlinx.coroutines.delay(2000)
+                if (voiceTriggerEnabled) {
+                    startListening()
+                }
+            }
         }
-        startActivity(alertIntent)
     }
 
     /**

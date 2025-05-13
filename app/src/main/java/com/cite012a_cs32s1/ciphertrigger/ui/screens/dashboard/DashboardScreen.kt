@@ -144,7 +144,15 @@ fun DashboardScreen(
 
             // SOS Button
             SOSButton(
-                onClick = { onTriggerAlert() }
+                onClick = {
+                    // Check if there are emergency contacts before triggering alert
+                    if (viewModel.hasEmergencyContacts()) {
+                        onTriggerAlert()
+                    } else {
+                        // Show a message if there are no emergency contacts
+                        viewModel.showToast("Please add emergency contacts before triggering an alert")
+                    }
+                }
             )
 
             // Emergency contacts quick access

@@ -175,6 +175,22 @@ class DashboardViewModel(application: Application) : AndroidViewModel(applicatio
             _isMicrophoneAvailable.value = isMicAvailable
         }
     }
+
+    /**
+     * Check if there are emergency contacts configured
+     * @return true if there are emergency contacts, false otherwise
+     */
+    fun hasEmergencyContacts(): Boolean {
+        return dashboardState.value.emergencyContacts.isNotEmpty()
+    }
+
+    /**
+     * Show a toast message
+     * @param message The message to show
+     */
+    fun showToast(message: String) {
+        android.widget.Toast.makeText(getApplication(), message, android.widget.Toast.LENGTH_SHORT).show()
+    }
 }
 
 /**
