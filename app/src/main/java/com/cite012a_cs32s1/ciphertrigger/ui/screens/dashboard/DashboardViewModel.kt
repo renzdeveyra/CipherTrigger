@@ -8,6 +8,8 @@ import com.cite012a_cs32s1.ciphertrigger.data.repositories.LocationRepository
 import com.cite012a_cs32s1.ciphertrigger.data.repositories.PreferencesRepository
 import com.cite012a_cs32s1.ciphertrigger.di.AppModule
 import com.cite012a_cs32s1.ciphertrigger.services.VoiceRecognitionManager
+import com.cite012a_cs32s1.ciphertrigger.utils.MicrophoneStateManager
+import com.cite012a_cs32s1.ciphertrigger.utils.PermissionUtils
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
@@ -27,14 +29,25 @@ class DashboardViewModel(application: Application) : AndroidViewModel(applicatio
     private val _locationPermissionGranted = MutableStateFlow(locationRepository.hasLocationPermission())
     val locationPermissionGranted: StateFlow<Boolean> = _locationPermissionGranted
 
+    private val _microphonePermissionGranted = MutableStateFlow(PermissionUtils.hasPermission(getApplication(), android.Manifest.permission.RECORD_AUDIO))
+    val microphonePermissionGranted: StateFlow<Boolean> = _microphonePermissionGranted
+
+    // Track microphone availability (if it's in use by another app)
+    private val _isMicrophoneAvailable = MutableStateFlow(true)
+    val isMicrophoneAvailable: StateFlow<Boolean> = _isMicrophoneAvailable
+
     val dashboardState = combine(
         preferencesRepository.userPreferencesFlow,
-        _locationPermissionGranted
-    ) { preferences, locationPermission ->
+        _locationPermissionGranted,
+        _microphonePermissionGranted,
+        _isMicrophoneAvailable
+    ) { preferences, locationPermission, microphonePermission, microphoneAvailable ->
         DashboardState(
-            voiceTriggerEnabled = preferences.voiceTriggerEnabled,
+            voiceTriggerEnabled = microphonePermission && microphoneAvailable && preferences.voiceTriggerEnabled,
             locationServicesEnabled = locationPermission && preferences.locationSharingEnabled,
-            emergencyContacts = preferences.emergencyContacts
+            emergencyContacts = preferences.emergencyContacts,
+            hasMicrophonePermission = microphonePermission,
+            isMicrophoneAvailable = microphoneAvailable
         )
     }.stateIn(
         scope = viewModelScope,
@@ -47,6 +60,20 @@ class DashboardViewModel(application: Application) : AndroidViewModel(applicatio
      */
     fun updateVoiceTriggerStatus(enabled: Boolean) {
         viewModelScope.launch {
+            // Check microphone permission
+            val hasMicPermission = PermissionUtils.hasPermission(getApplication(), android.Manifest.permission.RECORD_AUDIO)
+            _microphonePermissionGranted.value = hasMicPermission
+
+            // Check if microphone is available (not in use by another app)
+            val isMicAvailable = MicrophoneStateManager.checkMicrophoneAvailability(getApplication())
+            _isMicrophoneAvailable.value = isMicAvailable
+
+            // Only enable voice trigger if microphone permission is granted and microphone is available
+            if (enabled && (!hasMicPermission || !isMicAvailable)) {
+                // Cannot enable without microphone permission or if microphone is in use
+                return@launch
+            }
+
             val currentPrefs = preferencesRepository.userPreferencesFlow.first()
             preferencesRepository.updateVoiceTriggerSettings(
                 enabled = enabled,
@@ -55,8 +82,12 @@ class DashboardViewModel(application: Application) : AndroidViewModel(applicatio
 
             // Update voice recognition service
             if (enabled) {
+                // Keep microphone active when voice trigger is enabled
+                MicrophoneStateManager.keepMicrophoneActive()
                 VoiceRecognitionManager.startVoiceRecognition(getApplication())
             } else {
+                // Release microphone when voice trigger is disabled
+                MicrophoneStateManager.releaseMicrophone()
                 VoiceRecognitionManager.stopVoiceRecognition(getApplication())
             }
         }
@@ -77,6 +108,19 @@ class DashboardViewModel(application: Application) : AndroidViewModel(applicatio
     fun checkLocationPermission() {
         _locationPermissionGranted.value = locationRepository.hasLocationPermission()
     }
+
+    /**
+     * Check microphone permission and availability
+     */
+    fun checkMicrophonePermission() {
+        _microphonePermissionGranted.value = PermissionUtils.hasPermission(getApplication(), android.Manifest.permission.RECORD_AUDIO)
+
+        // Also check microphone availability
+        viewModelScope.launch {
+            val isMicAvailable = MicrophoneStateManager.checkMicrophoneAvailability(getApplication())
+            _isMicrophoneAvailable.value = isMicAvailable
+        }
+    }
 }
 
 /**
@@ -85,5 +129,7 @@ class DashboardViewModel(application: Application) : AndroidViewModel(applicatio
 data class DashboardState(
     val voiceTriggerEnabled: Boolean = false,
     val locationServicesEnabled: Boolean = false,
-    val emergencyContacts: List<EmergencyContact> = emptyList()
+    val emergencyContacts: List<EmergencyContact> = emptyList(),
+    val hasMicrophonePermission: Boolean = false,
+    val isMicrophoneAvailable: Boolean = true
 )

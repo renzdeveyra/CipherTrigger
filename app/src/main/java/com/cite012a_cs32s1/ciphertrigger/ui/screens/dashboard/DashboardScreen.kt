@@ -16,6 +16,7 @@ import androidx.compose.material.icons.filled.Check
 import androidx.compose.material.icons.filled.LocationOn
 import androidx.compose.material.icons.filled.Person
 import androidx.compose.material.icons.filled.Settings
+import androidx.compose.material3.Button
 import androidx.compose.material3.Card
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
@@ -61,9 +62,10 @@ fun DashboardScreen(
 ) {
     val dashboardState by viewModel.dashboardState.collectAsState()
 
-    // Check location permission when the screen is first displayed
+    // Check location and microphone permissions when the screen is first displayed
     LaunchedEffect(key1 = Unit) {
         viewModel.checkLocationPermission()
+        viewModel.checkMicrophonePermission()
     }
 
     Scaffold(
@@ -104,17 +106,112 @@ fun DashboardScreen(
 
                     Spacer(modifier = Modifier.height(8.dp))
 
-                    StatusIndicator(
-                        iconPainter = painterResource(id = drawable.ic_mic),
-                        title = stringResource(R.string.voice_trigger_status),
-                        isActive = dashboardState.voiceTriggerEnabled,
-                        onToggle = { enabled ->
-                            viewModel.updateVoiceTriggerStatus(enabled)
-                        },
-                        onNavigateToSettings = {
-                            onNavigateToVoiceTriggerSettings()
+                    if (!dashboardState.hasMicrophonePermission) {
+                        // Show permission required card
+                        Card(
+                            modifier = Modifier
+                                .fillMaxWidth()
+                                .padding(vertical = 8.dp)
+                        ) {
+                            Column(
+                                modifier = Modifier.padding(16.dp),
+                                horizontalAlignment = Alignment.CenterHorizontally
+                            ) {
+                                Icon(
+                                    painter = painterResource(id = drawable.ic_mic),
+                                    contentDescription = null,
+                                    tint = MaterialTheme.colorScheme.error,
+                                    modifier = Modifier.size(36.dp)
+                                )
+
+                                Spacer(modifier = Modifier.height(8.dp))
+
+                                Text(
+                                    text = "Microphone Permission Required",
+                                    style = MaterialTheme.typography.titleMedium,
+                                    fontWeight = FontWeight.Bold,
+                                    textAlign = TextAlign.Center
+                                )
+
+                                Spacer(modifier = Modifier.height(8.dp))
+
+                                Text(
+                                    text = "Voice trigger requires microphone access",
+                                    style = MaterialTheme.typography.bodyMedium,
+                                    textAlign = TextAlign.Center
+                                )
+
+                                Spacer(modifier = Modifier.height(16.dp))
+
+                                Button(
+                                    onClick = {
+                                        onNavigateToVoiceTriggerSettings()
+                                    }
+                                ) {
+                                    Text("Configure")
+                                }
+                            }
                         }
-                    )
+                    } else if (!dashboardState.isMicrophoneAvailable) {
+                        // Show microphone unavailable card
+                        Card(
+                            modifier = Modifier
+                                .fillMaxWidth()
+                                .padding(vertical = 8.dp)
+                        ) {
+                            Column(
+                                modifier = Modifier.padding(16.dp),
+                                horizontalAlignment = Alignment.CenterHorizontally
+                            ) {
+                                Icon(
+                                    painter = painterResource(id = drawable.ic_mic),
+                                    contentDescription = null,
+                                    tint = MaterialTheme.colorScheme.error,
+                                    modifier = Modifier.size(36.dp)
+                                )
+
+                                Spacer(modifier = Modifier.height(8.dp))
+
+                                Text(
+                                    text = "Microphone Unavailable",
+                                    style = MaterialTheme.typography.titleMedium,
+                                    fontWeight = FontWeight.Bold,
+                                    textAlign = TextAlign.Center
+                                )
+
+                                Spacer(modifier = Modifier.height(8.dp))
+
+                                Text(
+                                    text = "Another app is using the microphone. Voice trigger cannot be enabled.",
+                                    style = MaterialTheme.typography.bodyMedium,
+                                    textAlign = TextAlign.Center
+                                )
+
+                                Spacer(modifier = Modifier.height(16.dp))
+
+                                Button(
+                                    onClick = {
+                                        // Refresh microphone state
+                                        viewModel.checkMicrophonePermission()
+                                    }
+                                ) {
+                                    Text("Retry")
+                                }
+                            }
+                        }
+                    } else {
+                        StatusIndicator(
+                            iconPainter = painterResource(id = drawable.ic_mic),
+                            title = stringResource(R.string.voice_trigger_status),
+                            isActive = dashboardState.voiceTriggerEnabled,
+                            onToggle = { enabled ->
+                                viewModel.updateVoiceTriggerStatus(enabled)
+                            },
+                            onNavigateToSettings = {
+                                onNavigateToVoiceTriggerSettings()
+                            }
+                        )
+                    }
 
                     Spacer(modifier = Modifier.height(8.dp))
 

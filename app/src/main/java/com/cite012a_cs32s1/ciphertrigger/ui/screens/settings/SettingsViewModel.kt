@@ -9,6 +9,7 @@ import com.cite012a_cs32s1.ciphertrigger.data.repositories.LocationRepository
 import com.cite012a_cs32s1.ciphertrigger.data.repositories.PreferencesRepository
 import com.cite012a_cs32s1.ciphertrigger.di.AppModule
 import com.cite012a_cs32s1.ciphertrigger.services.VoiceRecognitionManager
+import com.cite012a_cs32s1.ciphertrigger.utils.PermissionUtils
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.first
@@ -35,7 +36,8 @@ class SettingsViewModel(application: Application) : AndroidViewModel(application
                 alertCountdownSeconds = preferences.alertCountdownSeconds,
                 emergencyContacts = preferences.emergencyContacts,
                 hasContactsPermission = contactRepository.hasContactsPermission(),
-                hasLocationPermission = locationRepository.hasLocationPermission()
+                hasLocationPermission = locationRepository.hasLocationPermission(),
+                hasMicrophonePermission = PermissionUtils.hasPermission(getApplication(), android.Manifest.permission.RECORD_AUDIO)
             )
         }
         .stateIn(
@@ -239,6 +241,7 @@ data class SettingsState(
     val emergencyContacts: List<EmergencyContact> = emptyList(),
     val hasContactsPermission: Boolean = false,
     val hasLocationPermission: Boolean = false,
+    val hasMicrophonePermission: Boolean = false,
     val sendSmsDefault: Boolean = true,
     val makeCallDefault: Boolean = false
 )
