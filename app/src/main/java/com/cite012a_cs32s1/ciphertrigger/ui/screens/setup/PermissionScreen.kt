@@ -234,28 +234,6 @@ fun PermissionScreen(
             ) {
                 Text("Skip Permissions (Not Recommended)")
             }
-
-            Spacer(modifier = Modifier.height(16.dp))
-
-            // Direct navigation button with a simpler approach
-            androidx.compose.material3.Button(
-                onClick = {
-                    android.util.Log.d("PermissionScreen", "Direct navigation button clicked")
-                    // Use a simpler approach
-                    viewModel.completeSetup()
-                    android.util.Log.d("PermissionScreen", "Called completeSetup() from direct button")
-
-                    // Call onFinishSetup to navigate to dashboard
-                    onFinishSetup()
-                    android.util.Log.d("PermissionScreen", "Called onFinishSetup() from direct button")
-                },
-                modifier = Modifier.fillMaxWidth(),
-                colors = androidx.compose.material3.ButtonDefaults.buttonColors(
-                    containerColor = androidx.compose.material3.MaterialTheme.colorScheme.tertiary
-                )
-            ) {
-                Text("Go to Dashboard")
-            }
         }
     }
 }
