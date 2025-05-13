@@ -66,6 +66,10 @@ fun DashboardScreen(
     LaunchedEffect(key1 = Unit) {
         viewModel.checkLocationPermission()
         viewModel.checkMicrophonePermission()
+
+        // The ViewModel will handle periodic checking of microphone state
+        // This ensures the UI is updated when the microphone becomes unavailable
+        // or when the SpeechRecognizer stops listening
     }
 
     Scaffold(

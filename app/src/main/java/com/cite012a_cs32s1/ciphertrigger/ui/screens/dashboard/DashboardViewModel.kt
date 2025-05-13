@@ -10,12 +10,15 @@ import com.cite012a_cs32s1.ciphertrigger.di.AppModule
 import com.cite012a_cs32s1.ciphertrigger.services.VoiceRecognitionManager
 import com.cite012a_cs32s1.ciphertrigger.utils.MicrophoneStateManager
 import com.cite012a_cs32s1.ciphertrigger.utils.PermissionUtils
+import kotlinx.coroutines.Job
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.stateIn
+import kotlinx.coroutines.isActive
 import kotlinx.coroutines.launch
 
 /**
@@ -35,6 +38,14 @@ class DashboardViewModel(application: Application) : AndroidViewModel(applicatio
     // Track microphone availability (if it's in use by another app)
     private val _isMicrophoneAvailable = MutableStateFlow(true)
     val isMicrophoneAvailable: StateFlow<Boolean> = _isMicrophoneAvailable
+
+    // Job for periodic microphone state checking
+    private var microphoneCheckJob: Job? = null
+
+    init {
+        // Start periodic microphone state checking
+        startPeriodicMicrophoneCheck()
+    }
 
     val dashboardState = combine(
         preferencesRepository.userPreferencesFlow,
@@ -100,6 +111,48 @@ class DashboardViewModel(application: Application) : AndroidViewModel(applicatio
         viewModelScope.launch {
             preferencesRepository.updateLocationSharing(enabled)
         }
+    }
+
+    /**
+     * Start periodic checking of microphone state
+     * This ensures the UI is updated when the microphone becomes unavailable
+     * or when the SpeechRecognizer stops listening
+     */
+    private fun startPeriodicMicrophoneCheck() {
+        // Cancel any existing job
+        microphoneCheckJob?.cancel()
+
+        // Start a new job
+        microphoneCheckJob = viewModelScope.launch {
+            while (isActive) {
+                // Check microphone permission and availability
+                checkMicrophonePermission()
+
+                // Also check if voice trigger is still enabled in preferences
+                // This will catch cases where the SpeechRecognizer has disabled it
+                val preferences = preferencesRepository.userPreferencesFlow.first()
+                if (!preferences.voiceTriggerEnabled) {
+                    // If voice trigger was disabled by the service, make sure UI reflects this
+                    MicrophoneStateManager.releaseMicrophone()
+                }
+
+                // Wait before checking again (every 5 seconds)
+                delay(5000)
+            }
+        }
+    }
+
+    /**
+     * Stop periodic checking of microphone state
+     */
+    private fun stopPeriodicMicrophoneCheck() {
+        microphoneCheckJob?.cancel()
+        microphoneCheckJob = null
+    }
+
+    override fun onCleared() {
+        stopPeriodicMicrophoneCheck()
+        super.onCleared()
     }
 
     /**
